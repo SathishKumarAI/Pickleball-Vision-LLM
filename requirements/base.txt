@@ -1,0 +1,5 @@
+torch==2.2.1
+torchvision==0.17.1
+ultralytics==8.2.67
+opencv-python==4.10.0.84
+PyYAML @ file:///C:/b/abs_14xkfs39bx/croot/pyyaml_1728657968772/work

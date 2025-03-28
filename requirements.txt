@@ -1,0 +1,28 @@
+# requirements.txt
+# Computer Vision
+opencv-python==4.7.0.72
+ultralytics==8.0.43  # YOLOv8
+mediapipe==0.10.1
+
+# Machine Learning
+torch==2.1.0
+torchvision==0.16.0
+transformers==4.35.0
+accelerate==0.24.1
+
+# LLM
+sentencepiece==0.1.99
+transformers==4.35.0
+
+# Utilities
+numpy==1.24.3
+tqdm==4.65.0
+
+# Optional: For potential web deployment
+fastapi==0.95.1
+uvicorn==0.22.0
+
+# Development & Testing
+pytest==7.3.1
+black==23.3.0
+isort==5.12.0
