@@ -204,7 +204,7 @@ We welcome contributions! Please review `CONTRIBUTING.md` and open a PR.
 
 ## 📜 License
 
-MIT License. See `LICENSE`.
+Apache License. See `LICENSE`.
 
 ---
 
