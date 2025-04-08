@@ -1,6 +1,6 @@
 # Pickleball-Vision-LLM
 
-**Pickleball LLM** is a multimodal, AI-based coaching and analytics system designed to evaluate Pickleball gameplay from YouTube or recorded videos. It provides real-time feedback and personalized coaching tips using cutting-edge computer vision, LLMs, and deep learning.
+**Pickleball LLM** is a multimodal AI-powered system that analyzes Pickleball gameplay from videos using computer vision and language models. The system provides real-time feedback, performance analytics, and personalized coaching using cutting-edge technology.
 
 ---
 
@@ -9,8 +9,8 @@
 - [Overview](#overview)
 - [Key Features](#key-features)
 - [Tech Stack](#tech-stack)
-- [Project Structure](#project-structure)
-- [Installation](#installation)
+- [Environment Setup](#environment-setup)
+- [Project Structure Explained](#project-structure-explained)
 - [Usage](#usage)
 - [Development Roadmap](#development-roadmap)
 - [Contributing](#contributing)
@@ -21,142 +21,194 @@
 
 ## 📖 Overview
 
-This project utilizes video analysis and LLM-based summarization to extract performance insights from Pickleball matches. It uses a multimodal pipeline that integrates player tracking, pose estimation, event detection, and coaching tip generation.
+The goal of Pickleball LLM is to revolutionize Pickleball training by offering an automated, AI-driven coaching system that uses video input to detect player movements, classify actions, and generate coaching advice using LLMs.
 
 ---
 
 ## ✨ Key Features
 
-- 🎥 Ingest videos from YouTube links or local storage
-- 🧍‍♂️ Player detection & tracking with bounding boxes
-- 🕴️ Pose estimation for strokes and footwork
-- 📊 Action and shot classification (e.g., serve, volley, drop shot)
-- 🧠 Feedback generation via LLMs (e.g., "Improve your foot positioning during serves")
-- 🔁 Auto-coaching loop: track, analyze, suggest
-- 📁 Session-based feedback history
+- 🎥 YouTube or local video ingestion
+- 🧍‍♂️ Player detection & tracking
+- 🕴️ Pose estimation and movement classification
+- 📊 Action recognition (serve, volley, drops)
+- 🧠 Natural language feedback using LLMs
+- 💾 Save and compare historical sessions
 
 ---
 
 ## 🔧 Tech Stack
 
-| Area                  | Tools / Frameworks                                           |
-|-----------------------|--------------------------------------------------------------|
-| Language              | Python, Rust (via Tauri), JavaScript (Svelte)               |
-| AI/ML                 | PyTorch, OpenCV, YOLOv8, Mediapipe, HuggingFace Transformers |
-| LLMs                  | OpenAI GPT-4 / LLaMA / Mistral models via API or local       |
-| Backend               | FastAPI / Tauri (Rust)                                       |
-| Frontend              | Svelte                                                       |
-| Database              | SQLite (local-first), optionally Postgres for cloud setups   |
-| Orchestration         | Docker, Docker Compose                                       |
-| Video Ingestion       | YouTubeDL, FFmpeg                                            |
-| Deployment            | Dockerized, CI/CD ready                                      |
-| Experiment Tracking   | MLflow / WandB                                               |
+| Area              | Tools / Frameworks                                           |
+|-------------------|--------------------------------------------------------------|
+| Language          | Python, Rust (Tauri), JavaScript (Svelte)                   |
+| AI/ML             | PyTorch, YOLOv8, Mediapipe, Transformers, OpenCV            |
+| Backend           | FastAPI / Tauri                                              |
+| Frontend          | Svelte + Tailwind CSS                                        |
+| LLMs              | GPT-4 / Mistral / LLaVA                                      |
+| Data & Storage    | SQLite, optionally PostgreSQL, Local Filesystem              |
+| Orchestration     | Docker, GitHub Actions, MLflow                              |
+| Package Manager   | `uv`, `conda`, `pyproject.toml`                             |
 
 ---
 
-## 🗂 Project Structure
+## 🧠 Environment Setup: Modern Python Stack with `uv` and `conda`
 
+### ✅ Step 1: Conda Environment
+
+```yaml
+# environment.yml
+name: pickleball_llm
+channels:
+  - conda-forge
+dependencies:
+  - python=3.11
+  - pip
+  - pip:
+      - uv
 ```
-Pickleball-LLM/
-│
-├── frontend/                  # Svelte-based UI
-├── backend/                   # Tauri/FastAPI backend services
-│   ├── video_processing/      # Frame extraction, FFmpeg tools
-│   ├── vision_models/         # YOLO, pose estimation models
-│   ├── llm_feedback/          # Coaching tip generation via LLMs
-│   └── utils/                 # Helper modules
-│
-├── notebooks/                 # Research and experiments
-├── data/                      # Sample input/output video frames
-├── docker/                    # Dockerfiles and config
-├── requirements.txt
-├── docker-compose.yml
-└── README.md
+
+```bash
+conda env create -f environment.yml
+conda activate pickleball_llm
+```
+
+### ⚡ Step 2: Manage Dependencies with `uv`
+
+```toml
+# pyproject.toml
+[project]
+name = "pickleball_llm"
+version = "0.1.0"
+description = "Multimodal LLM model for analyzing pickleball gameplay"
+authors = [{ name = "Sathish Kumar", email = "SathishKumar786.ML@gmail.com" }]
+dependencies = [
+    "torch", "transformers", "opencv-python", "scikit-learn", "matplotlib",
+    "pandas", "numpy", "pydantic", "fastapi", "uvicorn", "pillow",
+    "langchain", "openai", "pytube", "moviepy"
+]
+```
+
+```bash
+uv pip install .
+# or
+uv pip freeze > requirements.lock.txt
 ```
 
 ---
 
-## 🚀 Installation
+## 📁 Project Structure Explained
 
-1. **Clone the repo:**
-
-```bash
-git clone https://github.com/your-org/pickleball-llm.git
-cd pickleball-llm
-```
-
-2. **Set up environment:**
-
-```bash
-python -m venv venv
-source venv/bin/activate
-pip install -r requirements.txt
-```
-
-3. **Install frontend dependencies:**
-
-```bash
-cd frontend
-npm install
-```
-
-4. **Run with Docker (recommended):**
-
-```bash
-docker-compose up --build
+```yaml
+Pickleball Vision Model
+├── 📜 Root: Metadata, environment and versioning
+│   ├── README.md, LICENSE, pyproject.toml, .gitignore
+│   ├── environment.yml: Conda environment
+│   ├── mlflow_setup.sh: MLflow config script
+│   └── CONTRIBUTING.md, CODE_OF_CONDUCT.md, CHANGELOG.md
+│
+├── ⚙️ config/: Central config files
+│   ├── config.yaml: General project configs
+│   └── hyperparams.yaml: Model/training parameters
+│
+├── 📦 data/: Organized input/output data folders
+│   ├── raw/: Unprocessed data
+│   ├── processed/: Cleaned and labeled data
+│   ├── interim/: Intermediate processing outputs
+│   ├── external/: 3rd party sources
+│   └── outputs/: Final exportable results
+│
+├── 📚 docs/: Technical documentation
+│   ├── setup.md, architecture.md, inference_api.md, model_zoo.md
+│   ├── vision_models.md, llm_prompts.md, evaluation_metrics.md
+│   └── assets/: Images and diagrams (e.g., pipeline, YOLO output)
+│
+├── 🧠 src/: Core Python modules
+│   ├── data_collection/: Download, sample, and track video frames
+│   ├── preprocessing/: Frame/pose extraction, augmentation
+│   ├── vision/: YOLO, DINO, DETR, and VideoMAE models
+│   ├── vision/tracker/: ByteTrack implementation
+│   ├── llm/: Feedback generation and prompt engineering
+│   └── utils/: Reusable utilities (metrics, config, alerts)
+│
+├── 🔁 scripts/: One-off utility scripts
+│   ├── train_model.py, run_mlflow_experiment.py
+│   └── init_empty_files.py, download_assets.py
+│
+├── 🌐 app/: FastAPI backend and Streamlit UI
+│   ├── endpoints/: REST endpoints (e.g., analyze, feedback)
+│   ├── models/: Inference wrapper for deployed model
+│   └── streamlit_ui/: Lightweight demo UI
+│
+├── 🎨 frontend/: Svelte-based frontend
+│   ├── App.svelte, main.js
+│   └── Tailwind CSS setup
+│
+├── 🐳 docker/: Docker environment
+│   ├── Dockerfile, docker-compose.yml, start.sh
+│
+├── 🧪 evaluation/: Model benchmarking scripts
+│   ├── benchmark_metrics.py, model_compare.py
+│   └── confusion_matrix.py
+│
+├── 📓 notebooks/: R&D and experiment notebooks
+│   ├── demo_pipeline.ipynb, model_ablation_study.ipynb
+│
+├── 🧪 tests/: Unit tests
+│   ├── test_video_utils.py, test_pose_utils.py, test_api_endpoints.py
+│
+├── 💾 checkpoints/: Trained model checkpoints
+├── 🪵 logs/: Log outputs
+├── 📈 mlruns/: MLflow experiment runs
+└── 🧬 .github/workflows/: CI/CD setup (linting, deployment)
 ```
 
 ---
 
 ## 🧪 Usage
 
-1. Launch the app locally.
-2. Upload a video or paste a YouTube URL.
-3. Select the type of analysis (basic, intermediate, coaching).
-4. View dashboard with analytics, key moments, and coaching tips.
+```bash
+conda activate pickleball_llm
+uvicorn app.api_server:app --reload
+# Frontend
+cd frontend && npm install && npm run dev
+```
 
 ---
 
 ## 🗺️ Development Roadmap
 
-### P0 – Core Functionality
-- [x] Video ingestion and frame extraction
-- [x] Player tracking and pose estimation
-- [x] LLM-based feedback
+### P0 – Core
+- ✅ Video ingestion
+- ✅ Pose detection
+- ✅ LLM feedback
 
-### P1 – UI/UX Integration
-- [x] Frontend dashboard with Svelte
-- [ ] Interactive playback with annotations
+### P1 – UI
+- [ ] Interactive dashboard
+- [ ] Annotation overlay
 
-### P2 – Personalization
-- [ ] Player profile and historical performance
-- [ ] ML-based skill progression tracking
+### P2 – Player Profiles
+- [ ] Session history
+- [ ] Skill level estimation
 
-### P3 – Cloud Support
-- [ ] Switch SQLite to Postgres for team-based usage
-- [ ] S3 integration for video storage
-
-### P4 – Marketplace Readiness
-- [ ] Add login, save sessions
-- [ ] CI/CD & user onboarding flow
+### P3 – Cloud Ready
+- [ ] Postgres migration
+- [ ] S3 video storage
 
 ---
 
 ## 🤝 Contributing
 
-PRs and issues are welcome! Please see our [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
+We welcome contributions! Please review `CONTRIBUTING.md` and open a PR.
 
 ---
 
 ## 📜 License
 
-This project is licensed under the MIT License. See `LICENSE` for details.
+MIT License. See `LICENSE`.
 
 ---
 
 ## 📬 Contact
 
 **Sathish Kumar**  
-📧 SathishKumar786.ML@gmail.com  
-
----
+📧 SathishKumar786.ML@gmail.com
