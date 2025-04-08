@@ -1,0 +1,130 @@
+{
+  "timestamp": "2025-04-07T22:23:02.163905",
+  "created": [
+    "config/config.yaml",
+    "config/hyperparams.yaml",
+    "data/raw/.gitkeep",
+    "data/processed/.gitkeep",
+    "data/interim/.gitkeep",
+    "data/external/.gitkeep",
+    "data/outputs/.gitkeep",
+    "docs/index.md",
+    "docs/setup.md",
+    "docs/architecture.md",
+    "docs/model_zoo.md",
+    "docs/inference_api.md",
+    "docs/pipeline_diagrams.md",
+    "docs/vision_models.md",
+    "docs/llm_prompts.md",
+    "docs/evaluation_metrics.md",
+    "docs/assets/logo.png",
+    "docs/assets/architecture_diagram.png",
+    "docs/assets/data_pipeline.svg",
+    "docs/assets/yolo_sample_output.jpg",
+    "src/data_collection/__init__.py",
+    "src/data_collection/video_scraper.py",
+    "src/data_collection/frame_sampler.py",
+    "src/data_collection/tracker.py",
+    "src/data_collection/stream_capture.py",
+    "src/preprocessing/__init__.py",
+    "src/preprocessing/frame_extractor.py",
+    "src/preprocessing/pose_extractor.py",
+    "src/preprocessing/segmentation_sam.py",
+    "src/preprocessing/augmentation.py",
+    "src/preprocessing/data_filtering.py",
+    "src/vision/__init__.py",
+    "src/vision/yolo_test.py",
+    "src/vision/run_grounding_dino.py",
+    "src/vision/run_detr.py",
+    "src/vision/run_videomae.py",
+    "src/vision/tracker/bytetrack.py",
+    "src/llm/__init__.py",
+    "src/llm/generate_feedback.py",
+    "src/llm/prompt_templates.py",
+    "src/llm/clip_integration.py",
+    "src/llm/video_llava_connector.py",
+    "src/utils/__init__.py",
+    "src/utils/logger.py",
+    "src/utils/video_utils.py",
+    "src/utils/pose_utils.py",
+    "src/utils/config.py",
+    "src/utils/metrics.py",
+    "src/utils/alerts.py",
+    "scripts/train_model.py",
+    "scripts/train_dummy_model.py",
+    "scripts/run_mlflow_experiment.py",
+    "scripts/pretrain_encoder.py",
+    "scripts/init_empty_files.py",
+    "scripts/download_assets.py",
+    "app/__init__.py",
+    "app/api_server.py",
+    "app/endpoints/analyze.py",
+    "app/endpoints/feedback.py",
+    "app/models/serve_model.py",
+    "app/streamlit_ui/app.py",
+    "frontend/public/index.html",
+    "frontend/src/main.js",
+    "frontend/src/App.svelte",
+    "frontend/src/styles/tailwind.css",
+    "checkpoints/.gitkeep",
+    "logs/.gitkeep",
+    "mlruns/.gitkeep",
+    "evaluation/benchmark_metrics.py",
+    "evaluation/confusion_matrix.py",
+    "evaluation/model_compare.py",
+    "notebooks/demo_pipeline.ipynb",
+    "notebooks/model_insight_analysis.ipynb",
+    "notebooks/prompt_design.ipynb",
+    "notebooks/model_ablation_study.ipynb",
+    "docker/Dockerfile",
+    "docker/docker-compose.yml",
+    "docker/start.sh",
+    "tests/__init__.py",
+    "tests/test_video_utils.py",
+    "tests/test_pose_utils.py",
+    "tests/test_llm_prompt.py",
+    "tests/test_api_endpoints.py",
+    ".github/workflows/ci.yml",
+    ".github/workflows/lint.yml",
+    ".github/workflows/deploy.yml"
+  ],
+  "skipped": [],
+  "errors": [
+    {
+      "file": "README.md",
+      "error": "[WinError 3] The system cannot find the path specified: ''"
+    },
+    {
+      "file": ".gitignore",
+      "error": "[WinError 3] The system cannot find the path specified: ''"
+    },
+    {
+      "file": "environment.yml",
+      "error": "[WinError 3] The system cannot find the path specified: ''"
+    },
+    {
+      "file": "pyproject.toml",
+      "error": "[WinError 3] The system cannot find the path specified: ''"
+    },
+    {
+      "file": "mlflow_setup.sh",
+      "error": "[WinError 3] The system cannot find the path specified: ''"
+    },
+    {
+      "file": "LICENSE",
+      "error": "[WinError 3] The system cannot find the path specified: ''"
+    },
+    {
+      "file": "CHANGELOG.md",
+      "error": "[WinError 3] The system cannot find the path specified: ''"
+    },
+    {
+      "file": "CONTRIBUTING.md",
+      "error": "[WinError 3] The system cannot find the path specified: ''"
+    },
+    {
+      "file": "CODE_OF_CONDUCT.md",
+      "error": "[WinError 3] The system cannot find the path specified: ''"
+    }
+  ]
+}
