@@ -1,0 +1,25 @@
+{
+"name": "Pickleball LLM Dev",
+"build": {
+    "dockerfile": "Dockerfile",
+    "context": ".."
+},
+"settings": {
+    "terminal.integrated.defaultProfile.linux": "bash",
+    "python.defaultInterpreterPath": "/opt/conda/envs/pickle_env/bin/python"
+},
+"extensions": [
+    "ms-python.python",
+    "ms-toolsai.jupyter",
+    "ms-azuretools.vscode-docker",
+    "esbenp.prettier-vscode"
+],
+"remoteUser": "root",
+"postCreateCommand": "/bin/bash -c 'conda init bash && conda env create -f /workspace/environment.yml && echo \"conda activate pickle_env\" >> ~/.bashrc && conda clean -a -y'",
+"forwardPorts": [8000, 3000],
+"mounts": [
+    "source=pickleball_cache,target=/workspace/.cache,type=volume"
+],
+"features": {},
+"updateRemoteUserUID": true
+}
