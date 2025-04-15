@@ -1,0 +1,72 @@
+[project]
+name = "pickleball_llm"
+version = "0.1.0"
+description = "Multimodal LLM model for analyzing pickleball gameplay with advanced video, audio, and text analysis."
+authors = [
+    { name = "Sathish Kumar", email = "SathishKumar786.ML@gmail.com" }
+]
+
+dependencies = [
+    "torch>=2.2",                        # Deep learning
+    "transformers>=4.39",                # LLMs
+    "opencv-python>=4.8",                # Computer vision
+    "scikit-learn>=1.4",                 # ML utilities
+    "matplotlib>=3.8",                   # Visualization
+    "pandas>=2.2",                       # Data analysis
+    "numpy>=1.26",                       # Numerics
+    "pydantic>=2.7",                     # Data validation
+    "fastapi>=0.110",                    # API framework
+    "uvicorn[standard]>=0.29",           # ASGI server
+    "pillow>=10.2",                      # Image I/O
+    "langchain>=0.1.13",                 # LLM pipelines
+    "openai>=1.22",                      # OpenAI API
+    "pytube>=15.0",                      # YouTube video downloads
+    "moviepy>=1.0",                      # Video editing
+    "tqdm>=4.66",                        # Progress bars
+    "loguru>=0.7",                       # Logging
+    "python-dotenv>=1.0",                # Env config
+    "ffmpeg-python>=0.2",                # FFmpeg binding for video/audio
+    "librosa>=0.10",                     # Audio processing
+    "sentence-transformers>=2.6",        # Embeddings
+    "faiss-cpu>=1.8",                    # Vector DB (CPU)
+    "chromadb>=0.4",                     # Vector DB option
+    "weaviate-client>=4.6",              # Vector DB (Weaviate)
+    "pytest>=8.1",                       # Testing
+    "httpx>=0.27",                       # Async HTTP requests
+    "aiofiles>=23.2",                    # Async file I/O
+    "typer>=0.12",                       # CLI apps
+    "rich>=13.7",                        # Better CLI output
+    "docker>=7.0",                       # Docker automation
+    "grpcio>=1.62",                      # gRPC (optional for microservices)
+    "sse-starlette>=1.6",                # Server-sent events (realtime streaming)
+    "onnxruntime>=1.17",                 # ONNX model serving
+    "pymongo>=4.7",                      # MongoDB for metadata/logging
+    "sqlalchemy>=2.0",                   # SQL DBs if needed
+    "dataclasses-json>=0.6",             # For fast API data models
+    "jinja2>=3.1",                       # Template engine (optional)
+    "pytest-cov>=4.1",                   # Test coverage
+]
+
+[project.optional-dependencies]
+dev = [
+    "black",
+    "isort",
+    "mypy",
+    "pre-commit",
+    "ruff",
+]
+docs = [
+    "mkdocs",
+    "mkdocs-material",
+    "pdoc3",
+]
+gpu = [
+    "torch==2.2.2+cu121",  # Adjust CUDA as needed
+    "faiss-gpu>=1.8",
+]
+
+[tool.black]
+line-length = 100
+
+[tool.isort]
+profile = "black"
