@@ -1,5 +1,3 @@
-# Pickleball-Vision-LLM
-
 **Pickleball LLM** is a multimodal AI-powered system that analyzes Pickleball gameplay from videos using computer vision and language models. The system provides real-time feedback, performance analytics, and personalized coaching using cutting-edge technology.
 
 ---
@@ -212,3 +210,4 @@ Apache License. See `LICENSE`.
 
 **Sathish Kumar**  
 📧 SathishKumar786.ML@gmail.com
+

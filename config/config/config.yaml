@@ -1,0 +1,56 @@
+# Add these sections to your existing config.yaml
+
+# Advanced preprocessing options
+preprocessing:
+  frame_sampling:
+    enabled: true
+    method: "adaptive"  # "fixed", "adaptive", "keyframe"
+    fps: 30
+    keyframe_threshold: 0.8
+  
+  augmentation:
+    enabled: false
+    methods:
+      - "normalize"
+      - "resize"
+      - "color_jitter"
+    resize_dims: [720, 1280]
+    normalize_params:
+      mean: [0.485, 0.456, 0.406]
+      std: [0.229, 0.224, 0.225]
+
+# Cache management
+caching:
+  enabled: true
+  method: "disk"  # "memory", "disk", "redis"
+  max_size_gb: 10
+  ttl_hours: 24
+  compression: true
+
+# Error handling and recovery
+error_handling:
+  retry_attempts: 3
+  timeout_seconds: 30
+  fallback_strategy: "skip"  # "skip", "default", "previous"
+  save_failed_frames: true
+  alert_threshold: 0.1  # alert if >10% frames fail
+
+# Distributed processing
+distributed:
+  enabled: false
+  backend: "dask"  # "dask", "ray", "spark"
+  cluster_config:
+    n_workers: 4
+    memory_limit: "4GB"
+    scheduler_port: 8786
+
+# Model serving
+serving:
+  api_version: "v1"
+  batch_inference: true
+  max_batch_size: 64
+  timeout_ms: 5000
+  enable_cors: true
+  rate_limit:
+    requests_per_minute: 100
+    burst_size: 20
