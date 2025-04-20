@@ -36,4 +36,4 @@ def rename_files_to_trailing_number(folder_path: str) -> None:
 
 # Example Usage
 if __name__ == "__main__":
-    rename_files_to_trailing_number(r"src/data_collection/src/data_collection/data")
+    rename_files_to_trailing_number(r"/workspaces/Pickleball-Vision-LLM/data/frames")
