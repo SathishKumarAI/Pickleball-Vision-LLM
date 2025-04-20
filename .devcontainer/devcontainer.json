@@ -1,25 +1,40 @@
 {
-"name": "Pickleball LLM Dev",
-"build": {
-    "dockerfile": "Dockerfile",
-    "context": ".."
-},
-"settings": {
-    "terminal.integrated.defaultProfile.linux": "bash",
-    "python.defaultInterpreterPath": "/opt/conda/envs/pickle_env/bin/python"
-},
-"extensions": [
-    "ms-python.python",
-    "ms-toolsai.jupyter",
-    "ms-azuretools.vscode-docker",
-    "esbenp.prettier-vscode"
-],
-"remoteUser": "root",
-"postCreateCommand": "/bin/bash -c 'conda init bash && conda env create -f /workspace/environment.yml && echo \"conda activate pickle_env\" >> ~/.bashrc && conda clean -a -y'",
-"forwardPorts": [8000, 3000],
-"mounts": [
-    "source=pickleball_cache,target=/workspace/.cache,type=volume"
-],
-"features": {},
-"updateRemoteUserUID": true
+    "name": "Pickleball LLM Dev",
+    "build": {
+        "dockerfile": "Dockerfile",
+        "context": ".."
+    },
+    "settings": {
+        "terminal.integrated.defaultProfile.linux": "bash",
+        "python.defaultInterpreterPath": "/opt/conda/envs/pickle_env/bin/python"
+    },
+    "extensions": [
+        "ms-python.python",
+        "ms-toolsai.jupyter",
+        "ms-azuretools.vscode-docker",
+        "esbenp.prettier-vscode",
+        "eamodio.gitlens"
+    ],
+    "customizations": {
+        "vscode": {
+            "settings": {
+                "git.enableCommitSigning": true,
+                "git.confirmSync": false,
+                "git.autofetch": true,
+                "git.user.name": "${localEnv:GIT_USERNAME}",
+                "git.user.email": "${localEnv:GIT_EMAIL}"
+            }
+        }
+    },
+    "remoteUser": "vscode",
+    "postCreateCommand": "bash .devcontainer/post-create.sh",
+    "forwardPorts": [8000, 3000],
+    "mounts": [
+        "source=pickleball_cache,target=/workspace/.cache,type=volume"
+    ],
+    "features": {
+        "ghcr.io/devcontainers/features/github-cli:1": {},
+        "ghcr.io/devcontainers/features/docker-in-docker:2": {}
+    },
+    "updateRemoteUserUID": true
 }
