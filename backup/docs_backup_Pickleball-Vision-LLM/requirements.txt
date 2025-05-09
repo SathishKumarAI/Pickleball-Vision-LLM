@@ -1,0 +1,31 @@
+# Core dependencies
+torch>=2.0.0
+torchvision>=0.15.0
+opencv-python>=4.8.0
+numpy>=1.24.0
+ultralytics>=11.0.0
+
+# Video processing
+yt-dlp>=2023.3.4
+
+# Development dependencies
+pytest>=7.0.0
+pytest-cov>=4.0.0
+black>=23.0.0
+flake8>=6.0.0
+mypy>=1.0.0
+pre-commit>=3.0.0
+
+# Testing dependencies
+pytest-mock>=3.10.0
+pytest-xdist>=3.0.0
+coverage>=7.0.0
+
+# Dashboard dependencies
+dash>=2.0.0
+plotly>=5.0.0
+pandas>=2.0.0
+
+# Monitoring dependencies
+prometheus-client>=0.16.0
+grafana-api>=1.0.0 

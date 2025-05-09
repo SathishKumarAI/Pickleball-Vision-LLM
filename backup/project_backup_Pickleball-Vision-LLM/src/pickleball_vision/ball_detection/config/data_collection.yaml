@@ -1,0 +1,31 @@
+# Data Collection Configuration
+
+# Input/Output paths
+video_dir: "data/raw/videos"
+output_dir: "test_results"
+
+# Frame extraction settings
+frame_size: [1280, 1280]
+min_frames_per_video: 100
+max_frames_per_video: 1000
+frame_interval: 1  # Process every nth frame
+
+# Quality thresholds
+quality_thresholds:
+  brightness: 0.2  # Minimum brightness (0-1)
+  contrast: 30.0   # Minimum contrast
+  blur: 100.0      # Minimum Laplacian variance
+
+# Motion detection
+motion_thresholds:
+  min_flow: 0.5    # Minimum optical flow magnitude
+  max_flow: 10.0   # Maximum optical flow magnitude
+
+# Preprocessing
+contrast_enhancement:
+  clip_limit: 3.0
+  tile_size: 8
+denoising:
+  h: 10
+  template_size: 7
+  search_size: 21 

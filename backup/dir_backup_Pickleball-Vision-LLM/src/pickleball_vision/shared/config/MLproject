@@ -1,0 +1,15 @@
+name: pickleball-vision
+
+conda_env: conda.yaml
+
+entry_points:
+  main:
+    parameters:
+      config_path: {type: str, default: "configs/base_config.yaml"}
+      video_path: {type: str, default: "data/raw_videos/"}
+      output_dir: {type: str, default: "outputs/"}
+    command: >
+      python src/pickleball_vision/main.py 
+      --config_path {config_path}
+      --video_path {video_path}
+      --output_dir {output_dir} 

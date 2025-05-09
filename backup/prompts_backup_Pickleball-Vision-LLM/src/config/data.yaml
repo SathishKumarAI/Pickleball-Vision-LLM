@@ -1,0 +1,14 @@
+path: data  # Dataset root directory
+train: train/images  # Train images relative to 'path'
+val: val/images  # Validation images relative to 'path'
+test: test/images  # Test images relative to 'path'
+
+# Classes
+names:
+  0: player
+  1: ball
+  2: court
+  3: net
+
+# Download script/URL (optional)
+download: https://github.com/yourusername/pickleball-vision/releases/download/v1.0/pickleball-dataset.zip 
