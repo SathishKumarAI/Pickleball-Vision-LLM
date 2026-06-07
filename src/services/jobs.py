@@ -78,6 +78,12 @@ class JobStore:
         with self._lock:
             return self._jobs.get(job_id)
 
+    def list_by_owner(self, user_id: Any) -> list:
+        """Return this user's jobs, newest first (by insertion order)."""
+        with self._lock:
+            jobs = [j for j in self._jobs.values() if j.meta.get("user_id") == user_id]
+        return list(reversed(jobs))
+
     def request_cancel(self, job_id: str) -> bool:
         """Mark a job for cooperative cancellation. Returns False if not cancellable."""
         with self._lock:

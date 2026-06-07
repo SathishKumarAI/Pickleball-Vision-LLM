@@ -34,11 +34,23 @@ vision = [
     "torch>=2.1",
     "torchvision>=0.16",
 ]
-# LLM / feedback generation.
+# LLM / feedback generation — local-first (HuggingFace). OSS, no external API.
 llm = [
     "transformers>=4.40",
     "langchain>=0.1",
-    "openai>=1.0",
+]
+# Optional managed-cloud LLM backends (pick one). Opt-in only: paid API + per-call
+# latency/cost + data leaves the box. Default backend is "rule"; canonical real
+# backend is local "hf". OpenAI direct dependency dropped — use a cloud provider.
+# See docs/BUDGET_PLAN.md.
+bedrock = [
+    "boto3>=1.34",                      # AWS Bedrock (Claude) — default cloud provider
+]
+azure = [
+    "openai>=1.0",                      # Azure OpenAI / Azure AI uses the openai SDK
+]
+vertex = [
+    "google-cloud-aiplatform>=1.40",   # Google Vertex AI (Gemini)
 ]
 # Experiment tracking + serving.
 mlops = [

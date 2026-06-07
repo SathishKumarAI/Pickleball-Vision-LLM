@@ -4,14 +4,22 @@ Takes structured game state (from
 ``src.integration.fusion.game_state.GameStateBuilder``) and produces natural
 language coaching feedback.
 
-Three interchangeable backends:
+Backends (local-first, OSS-first; cloud via a managed provider — not OpenAI):
 
-* ``rule``   — explainable, dependency-free heuristics. Default, always works.
-* ``openai`` — hosted LLM via the ``openai`` SDK (lazy-imported).
-* ``hf``     — local HuggingFace ``transformers`` text-generation (lazy-imported).
+* ``rule``   — explainable, dependency-free heuristics. **Default**, always works,
+  and the timeout/error fallback for the others (P0-5).
+* ``hf``     — **canonical real backend**: local HuggingFace ``transformers``
+  text-generation (e.g. Mistral/LLaMA). No external API, runs on-box.
+* ``cloud``  — managed hosted LLM via ``provider``: ``bedrock`` (AWS, Claude —
+  default), ``azure`` (Azure AI/OpenAI), or ``vertex`` (Google, Gemini). Opt-in;
+  see docs/BUDGET_PLAN.md for cost. Install the matching extra
+  (``[bedrock]`` / ``[azure]`` / ``[vertex]``).
 
-Heavy deps are imported lazily inside the backend so this module imports cleanly
-without the ``[llm]`` extras installed.
+NOTE: the direct OpenAI backend was removed per project decision (use a cloud
+provider instead). Its code is retained, commented, below for reference.
+
+Heavy deps (boto3 / azure / google SDKs, transformers) are imported lazily so
+this module imports cleanly without any of those extras installed.
 """
 
 from __future__ import annotations
@@ -26,17 +34,21 @@ class CoachingFeedbackGenerator:
     """Generate coaching feedback from game state or scene captions."""
 
     def __init__(self, backend: str = "rule", model: Optional[str] = None,
-                 deadline_s: float = 8.0, fallback: bool = True):
+                 provider: str = "bedrock", deadline_s: float = 8.0,
+                 fallback: bool = True):
         """
         Args:
-            backend: "rule" | "openai" | "hf".
-            model: Backend model id. Defaults: openai→gpt-4o-mini, hf→distilgpt2.
+            backend: "rule" | "hf" | "cloud".
+            model: Backend model id. Defaults: hf→distilgpt2; cloud→provider default.
+            provider: cloud provider when backend=="cloud":
+                "bedrock" (AWS) | "azure" | "vertex" (Google).
             deadline_s: hard wall-clock for a model call before falling back (P0-5).
             fallback: on timeout/error, return the rule-based coach instead of raising,
                 so a slow/failing LLM can never blow the pipeline's latency budget.
         """
         self.backend = backend
         self.model = model
+        self.provider = provider
         self.deadline_s = deadline_s
         self.fallback = fallback
         self.prompts = PromptTemplates()
@@ -65,7 +77,7 @@ class CoachingFeedbackGenerator:
     def _run(self, prompt: str, caption: str = "") -> str:
         if self.backend == "rule":
             return self._rule_based(caption or prompt)
-        if self.backend not in ("openai", "hf"):
+        if self.backend not in ("cloud", "hf"):
             raise ValueError(f"Unknown backend: {self.backend!r}")
 
         # P0-5: enforce a wall-clock deadline on the model call; on timeout or any
@@ -73,7 +85,7 @@ class CoachingFeedbackGenerator:
         # latency budget (or failing the whole job).
         import concurrent.futures as cf
 
-        call = self._openai if self.backend == "openai" else self._hf
+        call = self._cloud if self.backend == "cloud" else self._hf
         try:
             with cf.ThreadPoolExecutor(max_workers=1) as ex:
                 return ex.submit(call, prompt).result(timeout=self.deadline_s)
@@ -82,18 +94,86 @@ class CoachingFeedbackGenerator:
                 return self._rule_based(caption or prompt)
             raise
 
-    def _openai(self, prompt: str) -> str:
+    # --- managed cloud backends (AWS / Azure / Google) ---------------------
+
+    def _cloud(self, prompt: str) -> str:
+        """Dispatch to the configured managed provider."""
+        if self.provider == "bedrock":
+            return self._bedrock(prompt)
+        if self.provider == "azure":
+            return self._azure(prompt)
+        if self.provider == "vertex":
+            return self._vertex(prompt)
+        raise ValueError(f"Unknown cloud provider: {self.provider!r}")
+
+    def _bedrock(self, prompt: str) -> str:
+        """AWS Bedrock (default: Claude). Needs the ``[bedrock]`` extra (boto3)."""
         try:
-            from openai import OpenAI
-        except ImportError as e:  # pragma: no cover - needs [llm] extra
-            raise RuntimeError("openai backend needs `pip install openai`") from e
+            import json
+            import boto3
+        except ImportError as e:  # pragma: no cover - needs [bedrock] extra
+            raise RuntimeError("bedrock backend needs `pip install boto3`") from e
         if self._client is None:
-            self._client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+            self._client = boto3.client("bedrock-runtime",
+                                        region_name=os.getenv("AWS_REGION", "us-east-1"))
+        model_id = self.model or "anthropic.claude-3-haiku-20240307-v1:0"
+        body = {
+            "anthropic_version": "bedrock-2023-05-31",
+            "max_tokens": 200,
+            "messages": [{"role": "user", "content": prompt}],
+        }
+        resp = self._client.invoke_model(modelId=model_id, body=json.dumps(body))
+        payload = json.loads(resp["body"].read())
+        return payload["content"][0]["text"].strip()
+
+    def _azure(self, prompt: str) -> str:
+        """Azure AI / Azure OpenAI. Needs the ``[azure]`` extra."""
+        try:
+            from openai import AzureOpenAI
+        except ImportError as e:  # pragma: no cover - needs [azure] extra
+            raise RuntimeError("azure backend needs `pip install openai` (Azure SDK)") from e
+        if self._client is None:
+            self._client = AzureOpenAI(
+                api_key=os.getenv("AZURE_OPENAI_API_KEY"),
+                azure_endpoint=os.getenv("AZURE_OPENAI_ENDPOINT", ""),
+                api_version=os.getenv("AZURE_OPENAI_API_VERSION", "2024-06-01"),
+            )
         resp = self._client.chat.completions.create(
-            model=self.model or "gpt-4o-mini",
+            model=self.model or os.getenv("AZURE_OPENAI_DEPLOYMENT", "gpt-4o-mini"),
             messages=[{"role": "user", "content": prompt}],
         )
         return resp.choices[0].message.content.strip()
+
+    def _vertex(self, prompt: str) -> str:
+        """Google Vertex AI (Gemini). Needs the ``[vertex]`` extra."""
+        try:
+            import vertexai
+            from vertexai.generative_models import GenerativeModel
+        except ImportError as e:  # pragma: no cover - needs [vertex] extra
+            raise RuntimeError("vertex backend needs `pip install google-cloud-aiplatform`") from e
+        if self._client is None:
+            vertexai.init(project=os.getenv("GCP_PROJECT"),
+                          location=os.getenv("GCP_REGION", "us-central1"))
+            self._client = GenerativeModel(self.model or "gemini-1.5-flash")
+        return self._client.generate_content(prompt).text.strip()
+
+    # --- removed: direct OpenAI backend (use a cloud provider instead) -----
+    # Retained, commented, per project decision (see docs/BUDGET_PLAN.md and the
+    # `cloud-llm-not-openai` memory). Re-enable only if a direct OpenAI dependency
+    # is explicitly wanted again.
+    #
+    # def _openai(self, prompt: str) -> str:
+    #     try:
+    #         from openai import OpenAI
+    #     except ImportError as e:
+    #         raise RuntimeError("openai backend needs `pip install openai`") from e
+    #     if self._client is None:
+    #         self._client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+    #     resp = self._client.chat.completions.create(
+    #         model=self.model or "gpt-4o-mini",
+    #         messages=[{"role": "user", "content": prompt}],
+    #     )
+    #     return resp.choices[0].message.content.strip()
 
     def _hf(self, prompt: str) -> str:
         try:

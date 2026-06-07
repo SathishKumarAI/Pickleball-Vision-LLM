@@ -98,6 +98,14 @@ def cancel_job(job_id: str):
     return jsonify(job_id=job_id, status="cancelling")
 
 
+@bp.get("/jobs")
+@token_required
+def list_jobs():
+    """List the current user's jobs (newest first)."""
+    jobs = store.list_by_owner(g.user["id"])
+    return jsonify(jobs=[j.to_dict() for j in jobs], count=len(jobs))
+
+
 @bp.get("/jobs/<job_id>")
 @token_required
 def job_status(job_id: str):
