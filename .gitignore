@@ -226,3 +226,8 @@ backup/
 
 # Python venv (local API/test stack)
 .venv/
+
+# Next.js
+web/.next/
+web/node_modules/
+web/.env.local
