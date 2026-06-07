@@ -47,6 +47,12 @@ class Repo(ABC):
     def get_usage(self, user_id: str, period: str) -> Dict[str, Any]: ...
     @abstractmethod
     def incr_usage(self, user_id: str, period: str, videos: int, seconds: int) -> Dict[str, Any]: ...
+    # --- admin / GDPR ---
+    @abstractmethod
+    def list_all_jobs(self, limit: int = 100) -> List[Dict[str, Any]]: ...
+    @abstractmethod
+    def delete_user_data(self, user_id: str) -> Dict[str, int]:
+        """Delete all of a user's app data (GDPR). Returns counts deleted."""
 
 
 class InMemoryRepo(Repo):
@@ -130,6 +136,21 @@ class InMemoryRepo(Repo):
             u["seconds_processed"] += seconds
             return dict(u)
 
+    def list_all_jobs(self, limit: int = 100) -> List[Dict[str, Any]]:
+        with self._lock:
+            return list(reversed([dict(j) for j in self._jobs.values()]))[:limit]
+
+    def delete_user_data(self, user_id: str) -> Dict[str, int]:
+        with self._lock:
+            jids = [jid for jid, j in self._jobs.items() if j["user_id"] == user_id]
+            for jid in jids:
+                del self._jobs[jid]
+            self._subs.pop(user_id, None)
+            usage_keys = [k for k in self._usage if k[0] == user_id]
+            for k in usage_keys:
+                del self._usage[k]
+        return {"jobs": len(jids), "usage": len(usage_keys), "subscriptions": 1}
+
 
 class SupabaseRepo(Repo):
     """Supabase Postgres-backed repo (service-role key). Lazy-imports the client."""
@@ -188,3 +209,13 @@ class SupabaseRepo(Repo):
                "videos_processed": cur["videos_processed"] + videos,
                "seconds_processed": cur["seconds_processed"] + seconds}
         return self._sb.table("usage").upsert(row).execute().data[0]
+
+    def list_all_jobs(self, limit: int = 100) -> List[Dict[str, Any]]:
+        return (self._sb.table("jobs").select("*")
+                .order("created_at", desc=True).limit(limit).execute().data)
+
+    def delete_user_data(self, user_id: str) -> Dict[str, int]:
+        # ON DELETE CASCADE from auth.users handles jobs/analyses/usage/subscriptions;
+        # deleting the auth user is the authoritative GDPR erase.
+        self._sb.auth.admin.delete_user(user_id)
+        return {"deleted_user": 1}

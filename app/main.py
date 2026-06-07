@@ -8,7 +8,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.config import get_settings
-from app.routers import analyze, auth, health, jobs
+from app.routers import account, admin, analyze, auth, billing, health, jobs
 
 
 def create_app() -> FastAPI:
@@ -34,7 +34,9 @@ def create_app() -> FastAPI:
     app.include_router(auth.router)
     app.include_router(analyze.router)
     app.include_router(jobs.router)
-    # Phase 4+: analyses, billing, account, admin
+    app.include_router(billing.router)
+    app.include_router(account.router)
+    app.include_router(admin.router)
     return app
 
 
