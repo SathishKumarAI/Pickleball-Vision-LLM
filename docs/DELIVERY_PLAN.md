@@ -1,5 +1,11 @@
 # Delivery Plan — AWS · ~10k videos/mo · rule-first MVP
 
+> ⚠️ **SUPERSEDED (2026-06-07).** Scope changed to a production product for ~200
+> customers on a **managed stack** (Modal + Supabase + Next.js + Stripe + Bedrock).
+> Current plan: `docs/specs/RFC-003-managed-stack.md` + `docs/ROADMAP.md`; decision:
+> [ADR-0005](specs/../adr/0005-managed-stack.md). This AWS-self-managed plan is kept
+> for reference / future high-scale.
+
 > Concrete execution plan built on locked decisions (2026-06-07). Complements the
 > milestone view in `docs/ROADMAP.md`. No code here — this is the build order.
 

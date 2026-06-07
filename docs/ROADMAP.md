@@ -4,6 +4,18 @@
 > Product: web app — user logs in, uploads a pickleball game video, gets an
 > annotated output video + coaching insights back in minutes.
 
+> **Current direction:** production product for ~200 customers on a **managed
+> stack** — FastAPI + Modal (serverless GPU) + Supabase + Next.js/Vercel + Stripe
+> + Bedrock. Design: `docs/specs/RFC-003-managed-stack.md`. The earlier AWS-self-
+> managed plan (RFC-002 / DELIVERY_PLAN) is superseded ([ADR-0005](adr/0005-managed-stack.md)).
+>
+> **Build status (offline-verified, 36 pytest + Next.js build):** ✅ FastAPI control
+> plane (auth/jobs/billing/account/admin), ✅ Modal worker seam (`worker/runner`),
+> ✅ Next.js frontend, ✅ Supabase schema + RLS, ✅ Stripe billing + quota, ✅ court
+> analytics. **Remaining:** provision Supabase/Modal/Vercel + the real **M0 GPU
+> seam run**; vision-model upgrades (BoT-SORT/TrackNet/action/NVENC, GPU-side flags);
+> observability + retention cron.
+
 ---
 
 ## 1. Where we are (state snapshot)

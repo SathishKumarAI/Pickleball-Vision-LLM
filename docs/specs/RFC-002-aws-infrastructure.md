@@ -9,6 +9,11 @@
 | **Review deadline** | TBD |
 | **Depends on** | RFC-001 (pipeline design), `docs/DELIVERY_PLAN.md`, `docs/BUDGET_PLAN.md` |
 
+> ⚠️ **SUPERSEDED by [RFC-003](RFC-003-managed-stack.md)** (2026-06-07). At the
+> target scale (~200 customers) this self-managed AWS design is over-built; the
+> product now uses a managed stack (Modal + Supabase + Next.js + Stripe + Bedrock).
+> Kept for reference / future high-scale (>10k/mo) consideration. See [ADR-0005](../adr/0005-managed-stack.md).
+
 ## Summary
 Cloud infrastructure for the video-analysis product on **AWS**, provisioned as
 code. Stateless Flask API on Fargate behind an ALB; durable state in Redis +

@@ -78,6 +78,25 @@ Good for dev and self-hosting; cloud is for managed scale.
 
 ---
 
+## Managed stack (current — ~200 customers; supersedes the AWS model above)
+Per RFC-003 / ADR-0005 the product runs on managed services, not self-managed AWS.
+At ~200 customers (bursty, mostly-idle) the cost is dominated by pay-per-use GPU and
+is far lower than the fixed AWS infra above.
+
+| Item | Service | Cost shape @ ~200 customers |
+|------|---------|------------------------------|
+| GPU inference | **Modal** (serverless, scale-to-zero) | pay-per-second; ~$0.01–0.03 / video; **$0 when idle** |
+| DB + Auth + Storage + Realtime | **Supabase** | Free tier → Pro ~$25/mo |
+| Frontend hosting | **Vercel** | Hobby $0 → Pro ~$20/mo |
+| LLM coaching | **Bedrock Haiku** (opt-in; `rule` default) | ~$0.015/video only if `cloud` on |
+| Billing | **Stripe** | % of revenue |
+
+**Order of magnitude: tens of dollars/month** at low volume (vs RFC-002's fixed
+hundreds). Confirm Modal per-video GPU-seconds with the M0 seam run. See
+`docs/specs/RFC-003-managed-stack.md`.
+
+---
+
 ## References / Further reading
 > List prices change — verify before committing spend.
 - [Claude on AWS Bedrock — cost compared (CloudZero)](https://www.cloudzero.com/blog/claude-on-aws-bedrock/)

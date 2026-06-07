@@ -14,7 +14,8 @@ work in.
 | `TEMPLATE_RFC.md` | Blank reusable design-doc / RFC template |
 | `PRD-pickleball-vision.md` | Filled PRD — the product |
 | `RFC-001-video-analysis-pipeline.md` | Filled design doc — pipeline & product backend |
-| `RFC-002-aws-infrastructure.md` | Filled design doc — AWS infra & IaC (Terraform) |
+| `RFC-002-aws-infrastructure.md` | AWS infra & IaC (Terraform) — **superseded by RFC-003** |
+| `RFC-003-managed-stack.md` | **Current** — managed stack (Modal + Supabase + Next.js + Stripe) |
 | `RESEARCH_NOTES.md` | Cited research dossier (CV models, tracking, action recognition, court homography, AWS, doc templates) |
 
 ## How to use
