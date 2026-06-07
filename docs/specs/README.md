@@ -13,7 +13,8 @@ work in.
 | `TEMPLATE_PRD.md` | Blank reusable PRD template |
 | `TEMPLATE_RFC.md` | Blank reusable design-doc / RFC template |
 | `PRD-pickleball-vision.md` | Filled PRD — the product |
-| `RFC-001-video-analysis-pipeline.md` | Filled design doc — the system |
+| `RFC-001-video-analysis-pipeline.md` | Filled design doc — pipeline & product backend |
+| `RFC-002-aws-infrastructure.md` | Filled design doc — AWS infra & IaC (Terraform) |
 | `RESEARCH_NOTES.md` | Cited research dossier (CV models, tracking, action recognition, court homography, AWS, doc templates) |
 
 ## How to use
