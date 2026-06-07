@@ -33,6 +33,10 @@ class Repo(ABC):
     @abstractmethod
     def update_job(self, job_id: str, **fields: Any) -> Optional[Dict[str, Any]]: ...
     @abstractmethod
+    def claim_running(self, job_id: str) -> bool:
+        """Atomically transition queued -> running. False if already claimed
+        (idempotency guard against Modal retries / double-spawn)."""
+    @abstractmethod
     def find_job_by_sha(self, user_id: str, sha: str) -> Optional[Dict[str, Any]]: ...
     # --- billing/usage ---
     @abstractmethod
@@ -82,6 +86,14 @@ class InMemoryRepo(Repo):
                 return None
             j.update(fields)
             return dict(j)
+
+    def claim_running(self, job_id: str) -> bool:
+        with self._lock:
+            j = self._jobs.get(job_id)
+            if not j or j["status"] != "queued":
+                return False
+            j["status"] = "running"
+            return True
 
     def find_job_by_sha(self, user_id: str, sha: str) -> Optional[Dict[str, Any]]:
         if not sha:
@@ -141,6 +153,12 @@ class SupabaseRepo(Repo):
     def update_job(self, job_id: str, **fields: Any) -> Optional[Dict[str, Any]]:
         r = self._sb.table("jobs").update(fields).eq("id", job_id).execute()
         return r.data[0] if r.data else None
+
+    def claim_running(self, job_id: str) -> bool:
+        # Conditional update: only succeeds if still queued (atomic in Postgres).
+        r = (self._sb.table("jobs").update({"status": "running"})
+             .eq("id", job_id).eq("status", "queued").execute())
+        return bool(r.data)
 
     def find_job_by_sha(self, user_id: str, sha: str) -> Optional[Dict[str, Any]]:
         if not sha:
