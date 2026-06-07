@@ -220,3 +220,6 @@ htmlcov/
 
 # Tracked backups bloat the repo — keep on disk, out of git
 backup/
+
+# Keep committed doc diagrams (override *.png)
+!docs/assets/*.png
