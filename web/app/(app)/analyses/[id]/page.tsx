@@ -14,16 +14,16 @@ export default function AnalysisPage({ params }: { params: { id: string } }) {
     api<{ url: string }>(`/jobs/${params.id}/video`).then((r) => setVideoUrl(r.url)).catch(() => {});
   }, [params.id]);
 
-  if (err) return <p className="text-red-600">{err}</p>;
+  if (err) return <p className="text-red-400">{err}</p>;
   if (!result) return <p className="text-slate-500">Loading…</p>;
 
   return (
     <div className="space-y-8">
       <h1 className="text-2xl font-bold">Match analysis</h1>
       {videoUrl ? (
-        <video src={videoUrl} controls className="w-full rounded-xl border border-slate-200 bg-black" />
+        <video src={videoUrl} controls className="w-full rounded-xl border border-white/10 bg-black" />
       ) : (
-        <div className="flex h-64 items-center justify-center rounded-xl border border-slate-200 bg-slate-100 text-slate-400">
+        <div className="flex h-64 items-center justify-center rounded-xl border border-white/10 bg-white/10 text-slate-400">
           Annotated video unavailable
         </div>
       )}

@@ -29,25 +29,24 @@ export default function Nav() {
     router.push("/login");
   }
 
+  const cls = (active: boolean) =>
+    active ? "text-ball" : "text-slate-400 hover:text-slate-100";
+
   return (
-    <nav className="flex items-center justify-between border-b border-slate-200 bg-white px-6 py-3">
-      <Link href="/dashboard" className="font-bold">🏓 Pickleball Vision</Link>
-      <div className="flex items-center gap-4 text-sm">
-        {LINKS.map(([href, label]) => (
-          <Link
-            key={href}
-            href={href}
-            className={pathname === href ? "font-semibold text-brand" : "text-slate-600 hover:text-slate-900"}
-          >
-            {label}
-          </Link>
-        ))}
-        {isAdmin && (
-          <Link href="/admin" className={pathname === "/admin" ? "font-semibold text-brand" : "text-slate-600 hover:text-slate-900"}>
-            Admin
-          </Link>
-        )}
-        <button onClick={signOut} className="text-slate-500 hover:text-slate-900">Sign out</button>
+    <nav className="sticky top-0 z-30 border-b border-white/10 bg-ink/70 backdrop-blur-xl">
+      <div className="mx-auto flex max-w-5xl items-center justify-between px-6 py-3.5">
+        <Link href="/dashboard" className="font-display font-bold">
+          🏓 Pickleball<span className="gradient-text">Vision</span>
+        </Link>
+        <div className="flex items-center gap-5 text-sm">
+          {LINKS.map(([href, label]) => (
+            <Link key={href} href={href} className={`transition ${cls(pathname === href)}`}>{label}</Link>
+          ))}
+          {isAdmin && <Link href="/admin" className={`transition ${cls(pathname === "/admin")}`}>Admin</Link>}
+          <button onClick={signOut} className="rounded-lg border border-white/10 px-3 py-1.5 text-slate-400 transition hover:border-white/30 hover:text-slate-100">
+            Sign out
+          </button>
+        </div>
       </div>
     </nav>
   );

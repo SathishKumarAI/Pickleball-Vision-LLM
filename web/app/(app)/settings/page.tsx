@@ -26,18 +26,18 @@ export default function SettingsPage() {
     <div className="space-y-8">
       <h1 className="text-2xl font-bold">Settings</h1>
 
-      <section className="rounded-xl border border-red-200 bg-white p-6">
-        <h2 className="font-semibold text-red-700">Delete account</h2>
-        <p className="mt-2 text-sm text-slate-600">
+      <section className="rounded-xl border border-red-500/30 bg-white/[0.04] p-6">
+        <h2 className="font-semibold text-red-400">Delete account</h2>
+        <p className="mt-2 text-sm text-slate-400">
           Permanently erase your account, videos, and analyses (GDPR). This cannot be undone.
         </p>
         {!confirming ? (
-          <button onClick={() => setConfirming(true)} className="mt-4 rounded-lg border border-red-300 px-4 py-2 text-sm font-semibold text-red-700">
+          <button onClick={() => setConfirming(true)} className="mt-4 rounded-lg border border-red-500/40 px-4 py-2 text-sm font-semibold text-red-400">
             Delete my account
           </button>
         ) : (
           <div className="mt-4 flex gap-3">
-            <button onClick={deleteAccount} disabled={busy} className="rounded-lg bg-red-600 px-4 py-2 text-sm font-semibold text-white disabled:opacity-50">
+            <button onClick={deleteAccount} disabled={busy} className="rounded-lg bg-red-500 px-4 py-2 text-sm font-semibold text-white disabled:opacity-50">
               {busy ? "Erasing…" : "Yes, delete everything"}
             </button>
             <button onClick={() => setConfirming(false)} className="text-sm text-slate-500">Cancel</button>

@@ -51,7 +51,7 @@ export default function AdminPage() {
     return () => clearInterval(t);
   }, [auto, refresh]);
 
-  if (denied) return <p className="text-red-600">Admin access only.</p>;
+  if (denied) return <p className="text-red-400">Admin access only.</p>;
 
   return (
     <div className="space-y-8">
@@ -67,7 +67,7 @@ export default function AdminPage() {
       <section>
         <div className="mb-2 flex items-center justify-between">
           <h2 className="font-semibold">Application logs</h2>
-          <select value={level} onChange={(e) => setLevel(e.target.value)} className="rounded border border-slate-300 px-2 py-1 text-sm">
+          <select value={level} onChange={(e) => setLevel(e.target.value)} className="rounded border border-white/15 px-2 py-1 text-sm">
             <option value="">all levels</option>
             {["INFO", "WARNING", "ERROR"].map((l) => <option key={l} value={l}>{l}</option>)}
           </select>
@@ -76,13 +76,13 @@ export default function AdminPage() {
           {logs.length === 0 && <p className="text-slate-500">no logs</p>}
           {logs.map((r, i) => (
             <div key={i} className={LEVEL_COLOR[r.level] || "text-slate-300"}>
-              <span className="text-slate-600">{r.ts?.slice(11, 19)} </span>
+              <span className="text-slate-400">{r.ts?.slice(11, 19)} </span>
               <span>{(STATUS_WORD[r.level] || r.level).padStart(6)}: </span>
               <span className="text-slate-400">[{r.logger}] </span>
               <span>{r.msg} </span>
               <span className="text-slate-500">{extras(r)}</span>
               {r.request_id && r.request_id !== "-" && (
-                <span className="text-slate-600"> (req={r.request_id})</span>
+                <span className="text-slate-400"> (req={r.request_id})</span>
               )}
             </div>
           ))}
@@ -92,14 +92,14 @@ export default function AdminPage() {
       {/* All jobs */}
       <section>
         <h2 className="mb-2 font-semibold">All jobs ({jobs.length})</h2>
-        <div className="overflow-auto rounded-lg border border-slate-200 bg-white">
+        <div className="overflow-auto card">
           <table className="w-full text-sm">
-            <thead className="bg-slate-50 text-left text-slate-500">
+            <thead className="bg-white/5 text-left text-slate-500">
               <tr><th className="p-2">Job</th><th className="p-2">User</th><th className="p-2">Status</th><th className="p-2">Created</th></tr>
             </thead>
             <tbody>
               {jobs.map((j) => (
-                <tr key={j.id} className="border-t border-slate-100">
+                <tr key={j.id} className="border-t border-white/5">
                   <td className="p-2 font-mono">{j.id.slice(0, 8)}</td>
                   <td className="p-2 font-mono">{j.user_id?.slice(0, 8)}</td>
                   <td className="p-2 capitalize">{j.status}</td>

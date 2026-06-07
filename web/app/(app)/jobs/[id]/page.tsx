@@ -21,7 +21,7 @@ export default function JobPage({ params }: { params: { id: string } }) {
       <h1 className="text-2xl font-bold">Processing</h1>
       <JobProgress jobId={params.id} />
       {!cancelled && (
-        <button onClick={cancel} className="text-sm text-slate-500 hover:text-red-600">
+        <button onClick={cancel} className="text-sm text-slate-500 hover:text-red-400">
           Cancel
         </button>
       )}

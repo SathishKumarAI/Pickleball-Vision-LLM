@@ -18,10 +18,10 @@ export default function HistoryPage() {
       {jobs.length === 0 ? (
         <p className="text-slate-500">Nothing here yet.</p>
       ) : (
-        <ul className="divide-y divide-slate-200 rounded-xl border border-slate-200 bg-white">
+        <ul className="divide-y divide-white/10 card">
           {jobs.map((j) => (
             <li key={j.id} className="flex items-center justify-between px-4 py-3">
-              <Link href={j.status === "done" ? `/analyses/${j.id}` : `/jobs/${j.id}`} className="text-brand">
+              <Link href={j.status === "done" ? `/analyses/${j.id}` : `/jobs/${j.id}`} className="text-court">
                 {j.id.slice(0, 8)}…
               </Link>
               <span className="text-xs text-slate-400">{j.created_at?.slice(0, 16).replace("T", " ")}</span>
