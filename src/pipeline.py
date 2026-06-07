@@ -69,8 +69,18 @@ class Pipeline:
         self._tracker = get_tracker(self.tracker_backend)
 
     def process_video(self, video_path: str, frame_skip: int = 5,
-                      max_frames: Optional[int] = None) -> Dict[str, Any]:
-        """Decode a video, detect per frame, then fuse + generate feedback.
+                      max_frames: Optional[int] = None,
+                      annotate_path: Optional[str] = None,
+                      progress_cb: Optional[Any] = None) -> Dict[str, Any]:
+        """Decode a video, detect per frame, fuse + generate feedback, and
+        optionally write an annotated output video.
+
+        Args:
+            frame_skip: process 1 of every N frames (latency lever).
+            max_frames: cap processed frames.
+            annotate_path: if set, write an annotated ``.mp4`` here (boxes/IDs via
+                supervision when available, else plain OpenCV boxes).
+            progress_cb: optional ``callable(fraction_0_1, message)`` for job UIs.
 
         Requires the ``[vision]`` extras (cv2, torch, ultralytics). Run on a
         machine with the model stack installed.
@@ -80,28 +90,87 @@ class Pipeline:
         self._ensure_vision()
         cap = cv2.VideoCapture(video_path)
         fps = cap.get(cv2.CAP_PROP_FPS) or 30.0
+        total = int(cap.get(cv2.CAP_PROP_FRAME_COUNT)) or 0
         height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT)) or None
+        width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH)) or None
         self._frame_height = height
+
+        writer = None
+        annotator = self._make_annotator() if annotate_path else None
+        if annotate_path and width and height:
+            fourcc = cv2.VideoWriter_fourcc(*"mp4v")
+            writer = cv2.VideoWriter(annotate_path, fourcc, fps, (width, height))
 
         detections_per_frame: List[List[Dict[str, Any]]] = []
         idx = 0
         kept = 0
+        last_annot = None  # hold last annotated frame for skipped frames
         while cap.isOpened():
             ok, frame = cap.read()
             if not ok:
                 break
             if idx % frame_skip == 0:
-                detections_per_frame.append(self._detector.detect(frame))
+                dets = self._detector.detect(frame)
+                detections_per_frame.append(dets)
                 kept += 1
+                if writer is not None:
+                    last_annot = annotator(frame, dets)
+                if progress_cb and total:
+                    progress_cb(min(0.99, idx / total), f"frame {idx}/{total}")
                 if max_frames and kept >= max_frames:
+                    if writer is not None:
+                        writer.write(last_annot)
                     break
+            if writer is not None:
+                writer.write(last_annot if last_annot is not None else frame)
             idx += 1
         cap.release()
+        if writer is not None:
+            writer.release()
 
         result = self.analyze_detections(detections_per_frame, fps=fps, frame_height=height)
         result["frames_processed"] = kept
         result["video"] = video_path
+        if annotate_path:
+            result["annotated_video"] = annotate_path
+        if progress_cb:
+            progress_cb(1.0, "done")
         return result
+
+    def _make_annotator(self):
+        """Return ``annotate(frame, detections) -> frame``.
+
+        Prefers supervision annotators (boxes + track IDs); falls back to plain
+        OpenCV rectangles when supervision isn't installed.
+        """
+        import cv2
+        try:
+            import numpy as np
+            import supervision as sv
+            box = sv.BoxAnnotator()
+            label = sv.LabelAnnotator()
+
+            def annotate(frame, dets):
+                if not dets:
+                    return frame.copy()
+                xyxy = np.array([d["bbox"] for d in dets], dtype=float)
+                conf = np.array([d.get("confidence", 0.0) for d in dets], dtype=float)
+                cls = np.array([d.get("class_id", 0) for d in dets], dtype=int)
+                sv_dets = sv.Detections(xyxy=xyxy, confidence=conf, class_id=cls)
+                labels = [d.get("class_name", str(d.get("class_id", ""))) for d in dets]
+                out = box.annotate(frame.copy(), sv_dets)
+                return label.annotate(out, sv_dets, labels)
+            return annotate
+        except ImportError:
+            def annotate(frame, dets):
+                out = frame.copy()
+                for d in dets:
+                    x1, y1, x2, y2 = map(int, d["bbox"])
+                    cv2.rectangle(out, (x1, y1), (x2, y2), (0, 255, 0), 2)
+                    cv2.putText(out, d.get("class_name", ""), (x1, max(0, y1 - 5)),
+                                cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 1)
+                return out
+            return annotate
 
 
 def analyze_video(video_path: str, config: Optional[Any] = None,

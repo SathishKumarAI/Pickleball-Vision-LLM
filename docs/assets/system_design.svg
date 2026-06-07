@@ -1,0 +1,155 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1480" height="940" font-family="Segoe UI, Arial, sans-serif">
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L8,3 L0,6 Z" fill="#475569"/>
+    </marker>
+    <style>
+      .lane  { fill:#f1f5f9; stroke:#cbd5e1; stroke-width:1.5; rx:10; }
+      .lbl   { font-size:13px; fill:#334155; font-weight:700; letter-spacing:.5px;}
+      .box   { rx:9; stroke-width:1.5; }
+      .t     { font-size:13px; fill:#0f172a; }
+      .tb    { font-size:13.5px; fill:#0f172a; font-weight:700; }
+      .ts    { font-size:11px; fill:#475569; }
+      .flow  { stroke:#475569; stroke-width:2; fill:none; marker-end:url(#arrow); }
+      .ret   { stroke:#0ea5e9; stroke-width:2; fill:none; stroke-dasharray:5 4; marker-end:url(#arrow); }
+    </style>
+  </defs>
+
+  <rect x="0" y="0" width="1480" height="940" fill="#ffffff"/>
+  <text x="40" y="44" font-size="26" font-weight="800" fill="#0f172a">🏓 Pickleball-Vision-LLM — Video Analysis Product</text>
+  <text x="40" y="70" font-size="14.5" fill="#64748b">Login → upload a game video → annotated output video + coaching insights, in minutes (async job + GPU pipeline)</text>
+
+  <!-- ===== CLIENT lane ===== -->
+  <rect class="lane" x="40" y="100" width="300" height="780"/>
+  <text class="lbl" x="60" y="124">CLIENT (BROWSER / WEB APP)</text>
+  <rect class="box" x="70" y="150" width="240" height="64" fill="#dbeafe" stroke="#60a5fa"/>
+  <text class="tb" x="90" y="178">1 · Upload game video</text>
+  <text class="ts" x="90" y="198">multipart POST /jobs/video</text>
+
+  <rect class="box" x="70" y="470" width="240" height="70" fill="#dbeafe" stroke="#60a5fa"/>
+  <text class="tb" x="90" y="498">4 · Poll progress</text>
+  <text class="ts" x="90" y="518">GET /jobs/&lt;id&gt; → status %</text>
+
+  <rect class="box" x="70" y="700" width="240" height="86" fill="#bbf7d0" stroke="#22c55e"/>
+  <text class="tb" x="90" y="728">6 · Download results</text>
+  <text class="ts" x="90" y="748">GET /jobs/&lt;id&gt;/video  (mp4)</text>
+  <text class="ts" x="90" y="766">GET /jobs/&lt;id&gt;/result (json)</text>
+
+  <!-- ===== API lane ===== -->
+  <rect class="lane" x="360" y="100" width="300" height="780"/>
+  <text class="lbl" x="380" y="124">API  (Flask · src/api)</text>
+  <rect class="box" x="390" y="150" width="240" height="84" fill="#fee2e2" stroke="#f87171"/>
+  <text class="tb" x="410" y="176">2 · jobs blueprint</text>
+  <text class="ts" x="410" y="196">create Job → return job_id</text>
+  <text class="ts" x="410" y="214">202 Accepted (non-blocking)</text>
+
+  <rect class="box" x="390" y="470" width="240" height="70" fill="#fee2e2" stroke="#f87171"/>
+  <text class="tb" x="410" y="498">status / result / video 🔒</text>
+  <text class="ts" x="410" y="518">auth + ownership · send_file</text>
+
+  <!-- Auth + User DB -->
+  <rect class="box" x="390" y="558" width="240" height="64" fill="#e2e8f0" stroke="#94a3b8"/>
+  <text class="tb" x="410" y="584">🔒 Auth (src/services)</text>
+  <text class="ts" x="410" y="604">/auth/register · /login · /me</text>
+  <path d="M410,636 h200 v44 a100,9 0 0 1 -200,0 v-44 a100,9 0 0 1 200,0" fill="#cbd5e1" stroke="#64748b" stroke-width="1.5"/>
+  <ellipse cx="510" cy="636" rx="100" ry="9" fill="#e2e8f0" stroke="#64748b" stroke-width="1.5"/>
+  <text class="tb" x="455" y="660">User DB (SQLite)</text>
+  <text class="ts" x="448" y="676">bearer token · pbkdf2 hash</text>
+
+  <rect class="box" x="390" y="700" width="240" height="86" fill="#fef9c3" stroke="#eab308"/>
+  <text class="tb" x="410" y="726">JobStore (thread-safe)</text>
+  <text class="ts" x="410" y="744">queued→running→done|error</text>
+  <text class="ts" x="410" y="762">progress · result · swap→Redis</text>
+
+  <!-- ===== WORKER + PIPELINE lane ===== -->
+  <rect class="lane" x="680" y="100" width="520" height="780"/>
+  <text class="lbl" x="700" y="124">ASYNC WORKER  →  PIPELINE  (src/pipeline.py · 🖥️ GPU)</text>
+  <rect class="box" x="700" y="150" width="480" height="50" fill="#ede9fe" stroke="#a78bfa"/>
+  <text class="tb" x="720" y="180">3 · background thread runs Pipeline.process_video(progress_cb)</text>
+
+  <!-- pipeline stages -->
+  <g>
+    <rect class="box" x="700" y="220" width="225" height="58" fill="#e0f2fe" stroke="#38bdf8"/>
+    <text class="tb" x="716" y="244">Decode + sample</text>
+    <text class="ts" x="716" y="262">cv2/ffmpeg · FRAME_SKIP=3</text>
+
+    <rect class="box" x="955" y="220" width="225" height="58" fill="#e0f2fe" stroke="#38bdf8"/>
+    <text class="tb" x="971" y="244">Detect (YOLO)</text>
+    <text class="ts" x="971" y="262">Ultralytics / Roboflow weights</text>
+
+    <rect class="box" x="700" y="296" width="225" height="58" fill="#e0f2fe" stroke="#38bdf8"/>
+    <text class="tb" x="716" y="320">Track</text>
+    <text class="ts" x="716" y="338">supervision ByteTrack (IDs)</text>
+
+    <rect class="box" x="955" y="296" width="225" height="58" fill="#e0f2fe" stroke="#38bdf8"/>
+    <text class="tb" x="971" y="320">Pose (optional)</text>
+    <text class="ts" x="971" y="338">MediaPipe keypoints</text>
+
+    <rect class="box" x="700" y="372" width="225" height="58" fill="#dcfce7" stroke="#4ade80"/>
+    <text class="tb" x="716" y="396">Fuse → GameState</text>
+    <text class="ts" x="716" y="414">players/ball/action JSON</text>
+
+    <rect class="box" x="955" y="372" width="225" height="58" fill="#dcfce7" stroke="#4ade80"/>
+    <text class="tb" x="971" y="396">Annotate frames</text>
+    <text class="ts" x="971" y="414">supervision annotators</text>
+
+    <rect class="box" x="700" y="448" width="225" height="58" fill="#fae8ff" stroke="#e879f9"/>
+    <text class="tb" x="716" y="472">Coaching feedback</text>
+    <text class="ts" x="716" y="490">rule / OpenAI / HF + BLIP-2</text>
+
+    <rect class="box" x="955" y="448" width="225" height="58" fill="#e0f2fe" stroke="#38bdf8"/>
+    <text class="tb" x="971" y="472">Encode mp4</text>
+    <text class="ts" x="971" y="490">cv2/ffmpeg writer</text>
+  </g>
+
+  <!-- internal stage arrows -->
+  <path class="flow" d="M925,249 L953,249"/>
+  <path class="flow" d="M1067,278 L1067,294"/>
+  <path class="flow" d="M955,325 L927,325"/>
+  <path class="flow" d="M812,354 L812,370"/>
+  <path class="flow" d="M925,401 L953,401"/>
+  <path class="flow" d="M1067,430 L1067,446"/>
+  <path class="flow" d="M955,477 L927,477"/>
+
+  <!-- outputs -->
+  <rect class="box" x="700" y="700" width="480" height="86" fill="#bbf7d0" stroke="#22c55e"/>
+  <text class="tb" x="720" y="728">5 · Outputs written to job workdir / object store</text>
+  <text class="ts" x="720" y="748">annotated.mp4  (boxes · track IDs · labels)</text>
+  <text class="ts" x="720" y="766">result.json  (game states · actions · coaching summary)</text>
+
+  <!-- ===== latency budget callout ===== -->
+  <rect class="lane" x="1220" y="100" width="220" height="500" fill="#fff7ed" stroke="#fdba74"/>
+  <text class="lbl" x="1238" y="124" fill="#9a3412">LATENCY BUDGET  ≤ 2 min</text>
+  <text class="ts" x="1238" y="152">2-min clip @30fps = 3600 fr</text>
+  <text class="ts" x="1238" y="176">• FRAME_SKIP=3 → ~10 fps</text>
+  <text class="ts" x="1238" y="198">• GPU batch 16–32</text>
+  <text class="ts" x="1238" y="220">• cap 720p long side</text>
+  <text class="ts" x="1238" y="242">• hold-last annotation on</text>
+  <text class="ts" x="1238" y="260">  skipped frames (smooth)</text>
+  <text class="ts" x="1238" y="282">• async → UX not blocked</text>
+  <text class="tb" x="1238" y="312" fill="#9a3412">Target: ≤90s on 1 GPU</text>
+
+  <text class="lbl" x="1238" y="356" fill="#334155">SCALE-OUT</text>
+  <text class="ts" x="1238" y="382">thread → Celery/RQ</text>
+  <text class="ts" x="1238" y="404">JobStore → Redis</text>
+  <text class="ts" x="1238" y="426">files → S3 + signed URLs</text>
+  <text class="ts" x="1238" y="448">GPU worker autoscale pool</text>
+  <text class="ts" x="1238" y="470">hash video → cache result</text>
+
+  <text class="lbl" x="1238" y="514" fill="#334155">STATUS</text>
+  <text class="ts" x="1238" y="540">💻 control plane: built+tested</text>
+  <text class="ts" x="1238" y="562">🖥️ vision run: GPU box</text>
+
+  <!-- ===== cross-lane flows ===== -->
+  <path class="flow" d="M310,182 L388,188"/>           <!-- upload -> api -->
+  <path class="flow" d="M630,188 L700,172"/>           <!-- api -> worker -->
+  <path class="ret"  d="M388,205 C350,260 350,420 308,470"/>  <!-- job_id back to client -->
+  <path class="flow" d="M812,506 L812,698"/>           <!-- pipeline -> outputs -->
+  <path class="flow" d="M512,234 L512,468"/>           <!-- api keeps jobstore (down) -->
+  <path class="ret"  d="M630,512 C660,560 660,650 630,700"/> <!-- status reads jobstore -->
+  <path class="ret"  d="M700,743 L632,735"/>           <!-- outputs -> jobstore meta -->
+  <path class="ret"  d="M390,505 C350,540 348,600 308,505"/> <!-- api -> client poll resp -->
+  <path class="flow" d="M698,743 L312,745"/>           <!-- results available to client -->
+
+  <text x="40" y="915" font-size="12" fill="#94a3b8">Solid = request/data flow · Dashed = response/poll · Built &amp; tested offline: upload→job→poll→download control plane (stub processor). Real detect/track/annotate runs on a GPU box with the [vision] extras.</text>
+</svg>
