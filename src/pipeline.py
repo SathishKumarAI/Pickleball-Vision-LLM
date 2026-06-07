@@ -38,14 +38,15 @@ class Pipeline:
 
     def analyze_detections(self, detections_per_frame: List[List[Dict[str, Any]]],
                            fps: float = 30.0,
-                           frame_height: Optional[int] = None) -> Dict[str, Any]:
-        """Run fusion + feedback over pre-computed per-frame detections.
+                           frame_height: Optional[int] = None,
+                           homography: Optional[List[List[float]]] = None) -> Dict[str, Any]:
+        """Run fusion + feedback (+ court analytics) over per-frame detections.
 
         Lets the whole back half of the pipeline be exercised without running
         a model — pass detections from a fixture, a cache, or a real detector.
 
         Returns:
-            ``{"states": [...], "feedback": [...], "summary": str}``
+            ``{"states": [...], "feedback": [...], "summary": str, "metrics": {...}}``
         """
         builder = GameStateBuilder(
             frame_height=frame_height if frame_height is not None else self._frame_height,
@@ -58,7 +59,12 @@ class Pipeline:
             states.append(state)
             feedback.append(self.feedback.from_game_state(state))
         summary = self.feedback.summarize(states) if states else ""
-        return {"states": states, "feedback": feedback, "summary": summary}
+
+        from src.integration.analytics import compute_match_metrics  # lazy (numpy)
+        metrics = compute_match_metrics(
+            states, fps=fps, homography=homography, frame_h=frame_height
+        )
+        return {"states": states, "feedback": feedback, "summary": summary, "metrics": metrics}
 
     # -- full vision path (needs [vision] extras) --------------------------
 
