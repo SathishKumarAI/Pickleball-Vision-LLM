@@ -1,0 +1,9 @@
+# Core runtime — mirrors [project].dependencies in pyproject.toml.
+# Keeps the app bootable without the heavy ML stack.
+# For the full pipeline install the extras instead:  pip install -e ".[vision,llm,mlops]"
+flask>=3.0
+python-dotenv>=1.0
+pydantic>=2.0
+pyyaml>=6.0
+numpy>=1.24
+tqdm>=4.66

@@ -45,7 +45,7 @@ entry point is broken, and there is no installable package.
 - [x] **1.2** Fix entry point. Decision: **Flask** — `src/main.py` already used the Flask factory+`app.run(debug=)` idiom; `temp/api` (FastAPI) is a broken relic of the old `src/pickleball_vision` layout. Created `src/api/__init__.py` with a `create_app()` factory (`/health`, `/`). Fixed `setup_logger()` → `setup_logger("pickleball_vision")` (name is required). Made `settings.py` tolerate missing `python-dotenv`.
 - [x] **1.3** Verified `settings.py` exports `API_HOST`/`API_PORT`/`DEBUG`.
 - [x] **1.4** Smoke test passes: factory builds, `/health`→200, `src.main` imports resolve.
-- [ ] **1.5** Add `requirements.txt` / lock for reproducibility; document conda+uv setup (or whichever is canonical).
+- [x] **1.5** Added `requirements.txt` (light core, mirrors pyproject) + `docs/SETUP.md` (conda/venv quickstart, extras matrix, `uv` path, env-var config, test + deploy pointers).
 - [ ] **1.6** (follow-up) Wire the real detection endpoint from `temp/api/app.py` into a Flask blueprint once `detector`/`preprocessor` modules are consolidated (Phase 2/3). FastAPI relic in `temp/` to be removed.
 
 ## 🧹 Phase 2 — De-duplicate (reduce maintenance surface)
