@@ -25,14 +25,20 @@ from .prompt_templates import PromptTemplates
 class CoachingFeedbackGenerator:
     """Generate coaching feedback from game state or scene captions."""
 
-    def __init__(self, backend: str = "rule", model: Optional[str] = None):
+    def __init__(self, backend: str = "rule", model: Optional[str] = None,
+                 deadline_s: float = 8.0, fallback: bool = True):
         """
         Args:
             backend: "rule" | "openai" | "hf".
             model: Backend model id. Defaults: openai→gpt-4o-mini, hf→distilgpt2.
+            deadline_s: hard wall-clock for a model call before falling back (P0-5).
+            fallback: on timeout/error, return the rule-based coach instead of raising,
+                so a slow/failing LLM can never blow the pipeline's latency budget.
         """
         self.backend = backend
         self.model = model
+        self.deadline_s = deadline_s
+        self.fallback = fallback
         self.prompts = PromptTemplates()
         self._client = None  # lazy backend handle
 
@@ -59,11 +65,22 @@ class CoachingFeedbackGenerator:
     def _run(self, prompt: str, caption: str = "") -> str:
         if self.backend == "rule":
             return self._rule_based(caption or prompt)
-        if self.backend == "openai":
-            return self._openai(prompt)
-        if self.backend == "hf":
-            return self._hf(prompt)
-        raise ValueError(f"Unknown backend: {self.backend!r}")
+        if self.backend not in ("openai", "hf"):
+            raise ValueError(f"Unknown backend: {self.backend!r}")
+
+        # P0-5: enforce a wall-clock deadline on the model call; on timeout or any
+        # error, degrade to the dependency-free rule coach instead of blowing the
+        # latency budget (or failing the whole job).
+        import concurrent.futures as cf
+
+        call = self._openai if self.backend == "openai" else self._hf
+        try:
+            with cf.ThreadPoolExecutor(max_workers=1) as ex:
+                return ex.submit(call, prompt).result(timeout=self.deadline_s)
+        except Exception:  # noqa: BLE001 - timeout, API error, cost cap, etc.
+            if self.fallback:
+                return self._rule_based(caption or prompt)
+            raise
 
     def _openai(self, prompt: str) -> str:
         try:

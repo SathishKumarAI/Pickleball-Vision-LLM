@@ -21,6 +21,7 @@ import tempfile
 from flask import Blueprint, g, jsonify, request, send_file
 
 from src.api.blueprints.auth import token_required
+from src.api.validate import UploadError, validate_upload
 from src.services.jobs import store
 
 bp = Blueprint("jobs", __name__)
@@ -42,10 +43,13 @@ def _build_processor(video_path: str, backend: str, tracker: str, annotate_path:
         progress_cb(0.02, "loading pipeline")
         from src.pipeline import Pipeline  # lazy: needs [vision] at run time
         pipe = Pipeline(feedback_backend=backend, tracker_backend=tracker)
+        # Wall-clock ceiling = 5x the 90s budget; cancel polled from the store.
         result = pipe.process_video(
             video_path,
             annotate_path=annotate_path,
             progress_cb=lambda f, m="processing": progress_cb(0.05 + 0.9 * f, m),
+            cancel_cb=lambda: store.is_cancelling(job.id),
+            max_seconds=float(os.getenv("JOB_MAX_SECONDS", "450")),
         )
         progress_cb(0.98, "finalizing")
         job.meta["video_path"] = annotate_path
@@ -68,9 +72,30 @@ def submit_video():
     out_path = os.path.join(workdir, "annotated.mp4")
     f.save(in_path)
 
-    job = store.create(meta={"input": in_path, "workdir": workdir, "user_id": g.user["id"]})
+    # P0-2: enforce size/duration/codec/resolution before accepting the job.
+    try:
+        meta = validate_upload(in_path, os.path.getsize(in_path))
+    except UploadError as e:
+        os.remove(in_path)
+        return jsonify(error=str(e)), e.status
+
+    job = store.create(meta={"input": in_path, "workdir": workdir,
+                             "user_id": g.user["id"],
+                             "duration_s": meta.get("_duration_s")})
     store.submit(job, _build_processor(in_path, backend, tracker, out_path))
     return jsonify(job_id=job.id, status=job.status.value), 202
+
+
+@bp.post("/jobs/<job_id>/cancel")
+@token_required
+def cancel_job(job_id: str):
+    """Request cooperative cancellation of a running job."""
+    job, err = _owned_or_error(job_id)
+    if err:
+        return err
+    if not store.request_cancel(job_id):
+        return jsonify(error="job not cancellable", status=job.status.value), 409
+    return jsonify(job_id=job_id, status="cancelling")
 
 
 @bp.get("/jobs/<job_id>")

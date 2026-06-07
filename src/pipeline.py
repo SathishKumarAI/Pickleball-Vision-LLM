@@ -12,10 +12,13 @@ inference needs the full stack (run on a GPU machine).
 
 from __future__ import annotations
 
-from typing import Any, Dict, List, Optional
+import time
+from typing import Any, Callable, Dict, List, Optional
 
 from src.integration.fusion.game_state import GameStateBuilder
 from src.llm.generate_feedback import CoachingFeedbackGenerator
+from src.services.gpu_gate import run_on_gpu
+from src.services.jobs import JobCancelled
 
 
 class Pipeline:
@@ -71,7 +74,10 @@ class Pipeline:
     def process_video(self, video_path: str, frame_skip: int = 5,
                       max_frames: Optional[int] = None,
                       annotate_path: Optional[str] = None,
-                      progress_cb: Optional[Any] = None) -> Dict[str, Any]:
+                      progress_cb: Optional[Any] = None,
+                      cancel_cb: Optional[Callable[[], bool]] = None,
+                      max_seconds: Optional[float] = None,
+                      gpu_timeout_s: float = 180.0) -> Dict[str, Any]:
         """Decode a video, detect per frame, fuse + generate feedback, and
         optionally write an annotated output video.
 
@@ -105,12 +111,25 @@ class Pipeline:
         idx = 0
         kept = 0
         last_annot = None  # hold last annotated frame for skipped frames
+        started = time.monotonic()
         while cap.isOpened():
+            # P0-4: cooperative cancel + whole-job wall-clock ceiling.
+            if cancel_cb and cancel_cb():
+                cap.release()
+                if writer is not None:
+                    writer.release()
+                raise JobCancelled("cancelled by request")
+            if max_seconds and (time.monotonic() - started) > max_seconds:
+                cap.release()
+                if writer is not None:
+                    writer.release()
+                raise TimeoutError(f"job exceeded max_seconds={max_seconds}")
             ok, frame = cap.read()
             if not ok:
                 break
             if idx % frame_skip == 0:
-                dets = self._detector.detect(frame)
+                # P0-1: serialize GPU access so concurrent jobs can't OOM the device.
+                dets = run_on_gpu(self._detector.detect, frame, timeout_s=gpu_timeout_s)
                 detections_per_frame.append(dets)
                 kept += 1
                 if writer is not None:

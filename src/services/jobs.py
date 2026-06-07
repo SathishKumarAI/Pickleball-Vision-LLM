@@ -21,11 +21,17 @@ from enum import Enum
 from typing import Any, Callable, Dict, Optional
 
 
+class JobCancelled(Exception):
+    """Raised by a processor that observed a cancel request and stopped."""
+
+
 class JobStatus(str, Enum):
     QUEUED = "queued"
     RUNNING = "running"
     DONE = "done"
     ERROR = "error"
+    CANCELLING = "cancelling"
+    CANCELLED = "cancelled"
 
 
 @dataclass
@@ -72,12 +78,31 @@ class JobStore:
         with self._lock:
             return self._jobs.get(job_id)
 
+    def request_cancel(self, job_id: str) -> bool:
+        """Mark a job for cooperative cancellation. Returns False if not cancellable."""
+        with self._lock:
+            job = self._jobs.get(job_id)
+            if job is None or job.status in (JobStatus.DONE, JobStatus.ERROR,
+                                             JobStatus.CANCELLED):
+                return False
+            job.status = JobStatus.CANCELLING
+            return True
+
+    def is_cancelling(self, job_id: str) -> bool:
+        """Worker polls this each batch to honour a cancel request."""
+        job = self.get(job_id)
+        return bool(job and job.status == JobStatus.CANCELLING)
+
     def submit(self, job: Job, processor: Processor, *, sync: bool = False) -> Job:
         """Run ``processor`` for ``job``. Async (daemon thread) unless ``sync``.
 
         ``sync=True`` runs inline — used by tests for deterministic lifecycle.
         """
         def run() -> None:
+            # Honour a cancel requested while still queued (don't clobber it with RUNNING).
+            if job.status == JobStatus.CANCELLING:
+                self._set(job, status=JobStatus.CANCELLED, message="cancelled")
+                return
             self._set(job, status=JobStatus.RUNNING, progress=0.0, message="started")
 
             def progress_cb(frac: float, msg: str = "") -> None:
@@ -85,8 +110,14 @@ class JobStore:
 
             try:
                 result = processor(job, progress_cb)
-                self._set(job, status=JobStatus.DONE, progress=1.0,
-                          message="completed", result=result)
+                # A cancel requested mid-run wins over a late completion.
+                if job.status == JobStatus.CANCELLING:
+                    self._set(job, status=JobStatus.CANCELLED, message="cancelled")
+                else:
+                    self._set(job, status=JobStatus.DONE, progress=1.0,
+                              message="completed", result=result)
+            except JobCancelled:
+                self._set(job, status=JobStatus.CANCELLED, message="cancelled")
             except Exception as e:  # noqa: BLE001 - surface any worker failure
                 self._set(job, status=JobStatus.ERROR,
                           error=f"{type(e).__name__}: {e}",
