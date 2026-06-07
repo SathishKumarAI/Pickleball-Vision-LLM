@@ -114,12 +114,18 @@ Legend: 💻 verifiable on this machine · 🖥️ needs GPU box · 🧰 needs i
 
 ---
 
-## 6. Open questions (need product/infra input)
-- Target scale (videos/day) → sizes the GPU pool + provider choice (BUDGET_PLAN scenarios).
-- Cloud account: AWS / Azure / GCP? (drives Bedrock vs Azure vs Vertex + S3/queue choices).
+## 6. Open questions
+
+**Resolved 2026-06-07** → see `docs/DELIVERY_PLAN.md`:
+- ✅ Cloud account: **AWS** (Bedrock + S3 + Celery/Redis + g5 GPU).
+- ✅ Scale: **~10k videos/mo** (small autoscaling pool, Redis+Celery, S3).
+- ✅ Coaching bar: **`rule`-only MVP first**; cloud LLM (Bedrock Haiku) post-MVP.
+
+**Still open (smaller):**
 - Data retention window for uploaded videos (faces → GDPR; sets S3 TTL).
+- IaC: Terraform vs AWS CDK.
+- Auth: custom bearer tokens (MVP) vs Cognito.
 - Real-time progress: SSE vs websocket vs poll (MVP = poll).
-- Coaching quality bar: `rule` MVP vs cloud LLM from day one (cost vs quality).
 
 ---
 
