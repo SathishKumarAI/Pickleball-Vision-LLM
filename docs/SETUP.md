@@ -82,3 +82,12 @@ pytest
 Docker + Compose live under `deployment/` (`Dockerfile`,
 `docker-compose.yml`, monitoring via Prometheus/Alertmanager). See
 `docs/PLAN.md` Phase 5 for the deploy validation checklist.
+
+---
+
+## References / Further reading
+- [`uv` (Astral) — fast Python package manager](https://docs.astral.sh/uv/)
+- [Conda — managing environments](https://docs.conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html)
+- [Python packaging — pyproject.toml](https://packaging.python.org/en/latest/guides/writing-pyproject-toml/)
+- [pytest](https://docs.pytest.org/) · [ruff](https://docs.astral.sh/ruff/)
+- Internal: `docs/ROADMAP.md`, `docs/DELIVERY_PLAN.md`

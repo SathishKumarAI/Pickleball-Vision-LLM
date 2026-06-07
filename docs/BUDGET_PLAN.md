@@ -75,3 +75,17 @@ With `rule` backend (no LLM): **~$0.012 / video** (GPU-dominated).
 ## Free / dev tier
 Local everything: `hf` (local Mistral/LLaMA) + local GPU + local disk = **$0 external**.
 Good for dev and self-hosting; cloud is for managed scale.
+
+---
+
+## References / Further reading
+> List prices change — verify before committing spend.
+- [Claude on AWS Bedrock — cost compared (CloudZero)](https://www.cloudzero.com/blog/claude-on-aws-bedrock/)
+- [Anthropic Claude params/pricing on Bedrock](https://docs.aws.amazon.com/bedrock/latest/userguide/model-parameters-claude.html)
+- [Amazon Bedrock pricing](https://aws.amazon.com/bedrock/pricing/)
+- [Amazon EC2 G5 (GPU) pricing](https://aws.amazon.com/ec2/instance-types/g5/)
+- [Amazon S3 pricing](https://aws.amazon.com/s3/pricing/)
+- [Google Vertex AI — Gemini pricing](https://cloud.google.com/vertex-ai/generative-ai/pricing)
+- [Azure OpenAI pricing](https://azure.microsoft.com/en-us/pricing/details/cognitive-services/openai-service/)
+- [Bedrock batch inference (cost-efficient async)](https://aws.amazon.com/blogs/machine-learning/classify-call-center-conversations-with-amazon-bedrock-batch-inference/)
+- Internal: `docs/DELIVERY_PLAN.md`, `docs/specs/RESEARCH_NOTES.md`

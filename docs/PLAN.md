@@ -89,3 +89,11 @@ entry point is broken, and there is no installable package.
 - **Refactor order matters.** Do Phase 1 (runnable + a test harness) before Phase 2 dedup, so moves are verifiable instead of blind.
 - **`backup/` is a safety net but not in git's job.** Phase 0.1 keeps it on disk, removes from history going forward.
 - Pre-repair local snapshot archived at `/tmp/pickleball_backup_1780801472.tgz`.
+
+---
+
+## References / Further reading
+- Packaging: [Python `pyproject.toml` guide](https://packaging.python.org/en/latest/guides/writing-pyproject-toml/) · [src layout](https://packaging.python.org/en/latest/discussions/src-layout-vs-flat-layout/)
+- Backend: [Flask app factory](https://flask.palletsprojects.com/en/latest/patterns/appfactories/)
+- Reuse/models: `docs/MODELS_AND_REUSE.md`
+- Successor plans: `docs/ROADMAP.md` (master) · `docs/REMEDIATION_PLAN.md` · `docs/DELIVERY_PLAN.md` · `docs/specs/`

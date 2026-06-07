@@ -58,3 +58,17 @@ Migration order: **bound the GPU → externalize state → externalize work → 
 ## Done this iteration (✅, verified offline, no ML deps)
 P0-1 GPU gate · P0-2 ffprobe input validation (tested vs real sample) · P0-4 cancel
 + wall-clock timeout · P0-5 LLM timeout/cost fallback.
+
+---
+
+## References / Further reading
+- Task queue: [Celery docs](https://docs.celeryq.dev/) · [Celery `acks_late`/time limits](https://docs.celeryq.dev/en/stable/userguide/tasks.html)
+- Concurrency: [Python `threading.BoundedSemaphore`](https://docs.python.org/3/library/threading.html#threading.BoundedSemaphore)
+- Object storage: [S3 presigned URLs](https://docs.aws.amazon.com/AmazonS3/latest/userguide/using-presigned-url.html) · [S3 lifecycle (TTL)](https://docs.aws.amazon.com/AmazonS3/latest/userguide/object-lifecycle-mgmt.html)
+- State/queue: [ElastiCache for Redis](https://docs.aws.amazon.com/AmazonElastiCache/latest/red-ug/WhatIs.html) · [Amazon SQS](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/welcome.html)
+- Media validation: [ffprobe docs](https://ffmpeg.org/ffprobe.html)
+- Observability: [Prometheus](https://prometheus.io/docs/introduction/overview/) · [CloudWatch](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/WhatIsCloudWatch.html)
+- Tracking/ReID (P2-3): [Datature — ByteTrack](https://datature.io/blog/introduction-to-bytetrack-multi-object-tracking-by-associating-every-detection-box) · [soccer ByteTrack+ReID](https://github.com/Anudeep007-hub/soccer-multi-object-tracking)
+- Court homography (P2-1): [Roboflow — camera calibration with keypoints](https://blog.roboflow.com/camera-calibration-sports-computer-vision/)
+- Privacy: [GDPR overview](https://gdpr.eu/what-is-gdpr/)
+- Internal: `docs/DELIVERY_PLAN.md`, `docs/specs/RFC-001-video-analysis-pipeline.md`, `docs/specs/RESEARCH_NOTES.md`

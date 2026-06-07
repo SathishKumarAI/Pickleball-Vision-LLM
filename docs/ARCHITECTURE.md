@@ -135,3 +135,11 @@ See `docs/PLAN.md` for the cleanup/build roadmap.
 - **Python** (`>=3.10,<3.13`, per `pyproject.toml`)
 - `src` layout, installable via `pip install -e .` with extras
   `[vision]` / `[llm]` / `[mlops]` / `[dev]`
+
+---
+
+## References / Further reading
+- Vision: [Ultralytics YOLO](https://docs.ultralytics.com/) · [Roboflow supervision (ByteTrack/annotators)](https://supervision.roboflow.com/) · [MediaPipe](https://ai.google.dev/edge/mediapipe/solutions/guide) · [OpenCV](https://docs.opencv.org/) · [PyTorch](https://pytorch.org/docs/stable/index.html)
+- Multimodal/LLM: [HuggingFace Transformers](https://huggingface.co/docs/transformers/index) · [LAVIS (BLIP-2)](https://github.com/salesforce/LAVIS) · [AWS Bedrock](https://docs.aws.amazon.com/bedrock/)
+- Backend/ops: [Flask](https://flask.palletsprojects.com/) · [MLflow](https://mlflow.org/docs/latest/index.html) · [Prometheus](https://prometheus.io/docs/) · [Docker](https://docs.docker.com/)
+- Internal: `docs/MODELS_AND_REUSE.md` · `docs/specs/RFC-001-video-analysis-pipeline.md` · `docs/assets/system_design.png`

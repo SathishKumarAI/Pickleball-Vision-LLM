@@ -135,3 +135,9 @@ Legend: 💻 verifiable on this machine · 🖥️ needs GPU box · 🧰 needs i
 - Cloud LLM = managed provider, never direct OpenAI ([[cloud-llm-not-openai]]).
 - Verify before claiming done; lazy-import heavy deps so the offline path stays green.
 - Commit + push after each completed task.
+
+---
+
+## References / Further reading
+- Planning practice: [Pragmatic Engineer — RFCs & Design Docs](https://blog.pragmaticengineer.com/rfcs-and-design-docs/) · [Product School — PRD template](https://productschool.com/blog/product-strategy/product-template-requirements-document-prd)
+- Internal docs: `docs/DELIVERY_PLAN.md` · `docs/PLAN.md` · `docs/REMEDIATION_PLAN.md` · `docs/BUDGET_PLAN.md` · `docs/MODELS_AND_REUSE.md` · `docs/ARCHITECTURE.md` · `docs/specs/` (PRD, RFC-001, RESEARCH_NOTES) · `docs/thinking/`
