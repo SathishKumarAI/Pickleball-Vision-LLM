@@ -242,9 +242,13 @@ class Config:
                     logger.warning(f"Failed to load environment variable {env_var}: {e}")
     
     def _setup_logging(self):
-        """Set up logging configuration."""
-        from ..logging.logger import setup_logging
-        setup_logging()
+        """Set up logging configuration.
+
+        Relies on the module-level loguru ``logger`` (imported at top), which is
+        usable without explicit setup. Kept as a hook for future config-driven
+        sink/level wiring.
+        """
+        logger.debug("Config logging initialised")
     
     def load_yaml_config(self, config_path: str) -> Dict[str, Any]:
         """Load configuration from YAML file.

@@ -6,8 +6,8 @@ from typing import Dict, List, Any, Optional, Tuple
 import logging
 from pathlib import Path
 from ultralytics import YOLO
-from ...shared.config.config import Config
-from ..utils.preprocessor import FramePreprocessor
+from ...core.config.config import Config
+from .preprocessor import FramePreprocessor
 from collections import defaultdict
 
 logger = logging.getLogger(__name__)

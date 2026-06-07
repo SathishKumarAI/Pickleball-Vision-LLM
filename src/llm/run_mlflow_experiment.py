@@ -15,7 +15,7 @@ import sys
 src_path = Path(__file__).parent.parent.parent
 sys.path.append(str(src_path))
 
-from pickleball_vision.config.config import Config
+from src.core.config.config import Config
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)

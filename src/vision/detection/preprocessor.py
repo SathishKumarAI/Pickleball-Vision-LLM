@@ -3,7 +3,7 @@ import cv2
 import numpy as np
 from typing import Optional, Tuple, List
 import logging
-from ..core.config.config import Config
+from ...core.config.config import Config
 
 logger = logging.getLogger(__name__)
 

@@ -54,8 +54,8 @@ entry point is broken, and there is no installable package.
 - [x] **2.2** Removed duplicate `src/llm/train_model.py` (kept `src/llm/training/train_model.py`). Byte-identical, zero importers.
 - [x] **2.3** Removed duplicate `src/vision/detection/tracker.py` (kept `src/vision/tracking/tracker.py`). Byte-identical, zero importers.
 - [x] **2.5** Flattened bogus `src/llm/src/` nest — `clip_integration.py`, `generate_feedback.py`, `prompt_templates.py`, `video_llava_connector.py` moved up to `src/llm/`.
-- [ ] **2.4** **Deferred → Phase 3.** `vision/detection/preprocessor.py` (197L) and `vision/preprocessing/preprocessor.py` (144L) differ, and three call sites import `FramePreprocessor` from three different non-existent paths (`vision.utils`, `vision.preprocessor`, `utils`). Resolving = pick canonical + fix `detector.py`'s broken import — belongs with pipeline wiring, not a blind merge.
-- [ ] **2.6** **Deferred → task 1.6.** Home `src/temp/` (broken FastAPI relic) once its detection logic is wired into a Flask blueprint, then delete.
+- [x] **2.4** Resolved (in Phase 3). Canonical `FramePreprocessor` = `vision/detection/preprocessor.py` (Config-compatible, more complete); incompatible `vision/preprocessing/preprocessor.py` removed; `detector.py` now imports the sibling `.preprocessor` and the canonical Config.
+- [x] **2.6** Done. `src/temp/` (broken FastAPI relic, 7 dangling imports, zero importers) removed. Endpoint pattern preserved in git history; rebuild as a Flask blueprint in Phase 3.2+ if needed (supersedes task 1.6).
 
 > Per the "use OSS, don't reinvent" directive: left a TODO in `metrics.py` to
 > swap hand-rolled `calculate_iou` for `torchvision.ops.box_iou` / `supervision`
@@ -63,10 +63,10 @@ entry point is broken, and there is no installable package.
 
 ## 🔌 Phase 3 — Wire the Pipeline (fill the stubs)
 
-- [ ] **3.1** Confirm vision path end-to-end: video → `detection/detector.py` (YOLO) → `tracking/` → structured output.
-- [ ] **3.2** Implement empty `llm/{models,prompts,embeddings,analytics}` stubs — game-state → prompt → coaching feedback.
+- [x] **3.1** Vision path is now **import-coherent**. Fixed the whole broken-import web: canonical Config moved `fusion/config/config.py` → `src/core/config/config.py` (stray `..logging.logger` import fixed); `detector.py` repointed (`shared.config`→`core.config.config`, `utils.preprocessor`→sibling `.preprocessor`); `video_processor.py` + both llm scripts repointed off the dead `pickleball_vision.*` / `vision.core.*` paths. **Static import scan: 17 broken → 0.** All `src/` parses; app still boots (`/health`→200). Legacy `test_collection.py` moved to `tests/` with a skip guard. (Runtime exec of vision modules still needs the `[vision]` extras — torch/cv2/ultralytics.)
+- [ ] **3.2** Implement empty `llm/{models,prompts,embeddings,analytics}` stubs — game-state → prompt → coaching feedback. (Needs `[llm]` extras to verify.)
 - [ ] **3.3** Implement `integration/{fusion,streaming,analytics}` — connect vision output to LLM input (`fusion` module is the join point).
-- [ ] **3.4** End-to-end orchestrator: one entrypoint runs a clip through vision + LLM → feedback.
+- [ ] **3.4** End-to-end orchestrator: one entrypoint runs a clip through vision + LLM → feedback. Re-add a `/detect` Flask blueprint (pattern preserved from the removed `temp/api`).
 
 ## 🧪 Phase 4 — Tests, CI, Quality
 

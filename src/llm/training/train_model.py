@@ -24,7 +24,7 @@ logger = logging.getLogger(__name__)
 src_path = Path(__file__).parent.parent.parent
 sys.path.append(str(src_path))
 
-from pickleball_vision.config.config import Config
+from src.core.config.config import Config
 
 class FrameFilter:
     """Main class for filtering video frames based on multiple criteria."""

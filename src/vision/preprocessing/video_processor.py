@@ -6,7 +6,7 @@ import cv2
 import numpy as np
 from typing import Dict, Any, Optional
 
-from ..core.config import Config
+from ...core.config.config import Config
 
 class VideoProcessor:
     """Video processing class."""
