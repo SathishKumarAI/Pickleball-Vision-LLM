@@ -95,6 +95,35 @@ def run_analysis(job_id: str, user_id: str, input_object_key: str,
     )
 
 
+@app.function(secrets=secrets, schedule=modal.Period(days=1))
+def retention_sweep(retention_days: int = 30):
+    """Daily cron: delete annotated videos + job rows older than N days (GDPR/cost).
+
+    Storage objects also expire via a Supabase Storage lifecycle rule; this sweep
+    is the belt-and-suspenders DB + output cleanup.
+    """
+    from datetime import datetime, timedelta, timezone
+
+    from app.config import Settings
+    from supabase import create_client
+
+    s = Settings()
+    sb = create_client(s.supabase_url, s.supabase_service_key)
+    cutoff = (datetime.now(timezone.utc) - timedelta(days=retention_days)).isoformat()
+
+    old = sb.table("jobs").select("id,output_video_key,result_object_key") \
+        .lt("created_at", cutoff).execute().data
+    for job in old:
+        for key in (job.get("output_video_key"), job.get("result_object_key")):
+            if key:
+                try:
+                    sb.storage.from_(s.outputs_bucket).remove([key])
+                except Exception:  # noqa: BLE001
+                    pass
+        sb.table("jobs").delete().eq("id", job["id"]).execute()
+    return {"deleted_jobs": len(old)}
+
+
 @app.local_entrypoint()
 def main(job_id: str = "test", user_id: str = "test", key: str = "test/in.mp4"):
     """Manual trigger for the Phase-1 seam test: `modal run worker/modal_app.py`."""

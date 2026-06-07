@@ -37,6 +37,9 @@ def create_app() -> FastAPI:
     app.include_router(billing.router)
     app.include_router(account.router)
     app.include_router(admin.router)
+
+    from app.observability import init_observability
+    init_observability(app)
     return app
 
 
