@@ -41,11 +41,12 @@ entry point is broken, and there is no installable package.
 
 ## 🧱 Phase 1 — Make It Runnable (BLOCKER for everything downstream)
 
-- [ ] **1.1** Add root `pyproject.toml` — package name, deps (torch, ultralytics, opencv, mediapipe, transformers, fastapi/flask, mlflow, pytest…), `src` layout config.
-- [ ] **1.2** Fix `src/main.py` import: `from src.api import create_app` → real location. Either (a) promote `src/temp/api/` → `src/api/`, or (b) repoint the import. Pick one, make consistent.
-- [ ] **1.3** Verify `src/core/config/settings.py` exports `API_HOST`, `API_PORT`, `DEBUG` used by `main.py`.
-- [ ] **1.4** Smoke test: `python -m src.main` (or via installed entrypoint) boots without ImportError.
+- [x] **1.1** Add root `pyproject.toml` — light core deps (flask, dotenv, pydantic, pyyaml, numpy, tqdm) + optional extras `[vision]`/`[llm]`/`[mlops]`/`[dev]`; `src` layout; `pickleball` console script.
+- [x] **1.2** Fix entry point. Decision: **Flask** — `src/main.py` already used the Flask factory+`app.run(debug=)` idiom; `temp/api` (FastAPI) is a broken relic of the old `src/pickleball_vision` layout. Created `src/api/__init__.py` with a `create_app()` factory (`/health`, `/`). Fixed `setup_logger()` → `setup_logger("pickleball_vision")` (name is required). Made `settings.py` tolerate missing `python-dotenv`.
+- [x] **1.3** Verified `settings.py` exports `API_HOST`/`API_PORT`/`DEBUG`.
+- [x] **1.4** Smoke test passes: factory builds, `/health`→200, `src.main` imports resolve.
 - [ ] **1.5** Add `requirements.txt` / lock for reproducibility; document conda+uv setup (or whichever is canonical).
+- [ ] **1.6** (follow-up) Wire the real detection endpoint from `temp/api/app.py` into a Flask blueprint once `detector`/`preprocessor` modules are consolidated (Phase 2/3). FastAPI relic in `temp/` to be removed.
 
 ## 🧹 Phase 2 — De-duplicate (reduce maintenance surface)
 

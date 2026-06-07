@@ -1,9 +1,13 @@
 from pathlib import Path
 import os
-from dotenv import load_dotenv
 
-# Load environment variables
-load_dotenv()
+# Load environment variables (optional dependency — app still boots without it)
+try:
+    from dotenv import load_dotenv
+
+    load_dotenv()
+except ImportError:
+    pass
 
 # Base paths
 BASE_DIR = Path(__file__).parent.parent.parent

@@ -5,7 +5,7 @@ from src.core.utils.logger import setup_logger
 def main():
     """Main application entry point."""
     # Setup logging
-    logger = setup_logger()
+    logger = setup_logger("pickleball_vision")
     logger.info("Starting Pickleball Vision LLM application")
     
     # Create and run application

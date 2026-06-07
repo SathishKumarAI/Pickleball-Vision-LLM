@@ -1,0 +1,62 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "pickleball-vision-llm"
+version = "0.1.0"
+description = "Multimodal AI system for pickleball gameplay analysis using computer vision and LLMs"
+readme = "README.md"
+requires-python = ">=3.10,<3.13"
+license = { text = "MIT" }
+authors = [{ name = "Sathish Kumar", email = "sathishkumar786.ml@gmail.com" }]
+
+# Core runtime — kept light so the app boots without the heavy ML stack.
+dependencies = [
+    "flask>=3.0",
+    "python-dotenv>=1.0",
+    "pydantic>=2.0",
+    "pyyaml>=6.0",
+    "numpy>=1.24",
+    "tqdm>=4.66",
+]
+
+[project.optional-dependencies]
+# Vision pipeline (YOLO / MediaPipe / OpenCV). Pulls torch — install on demand.
+vision = [
+    "opencv-python>=4.8",
+    "ultralytics>=8.0",
+    "mediapipe>=0.10",
+    "pillow>=10.0",
+    "imagehash>=4.3",
+    "torch>=2.1",
+    "torchvision>=0.16",
+]
+# LLM / feedback generation.
+llm = [
+    "transformers>=4.40",
+    "langchain>=0.1",
+    "openai>=1.0",
+]
+# Experiment tracking + serving.
+mlops = [
+    "mlflow>=2.10",
+    "uvicorn>=0.27",
+    "fastapi>=0.110",
+]
+dev = [
+    "pytest>=8.0",
+    "ruff>=0.4",
+    "pre-commit>=3.6",
+]
+
+[project.scripts]
+pickleball = "src.main:main"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["src*"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
