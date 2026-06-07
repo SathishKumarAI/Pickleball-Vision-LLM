@@ -22,9 +22,10 @@ class Pipeline:
     """Orchestrates vision → fusion → feedback."""
 
     def __init__(self, config: Optional[Any] = None, feedback_backend: str = "rule",
-                 frame_height: Optional[int] = None):
+                 tracker_backend: str = "simple", frame_height: Optional[int] = None):
         self.config = config
         self.feedback_backend = feedback_backend
+        self.tracker_backend = tracker_backend
         self._frame_height = frame_height
         self._detector = None  # lazy
         self._tracker = None    # lazy
@@ -63,9 +64,9 @@ class Pipeline:
             return
         # Lazy: only import the heavy stack when actually running a video.
         from src.vision.detection.detector import ObjectDetector
-        from src.vision.tracking.tracker import BallTracker
+        from src.vision.tracking.tracker import get_tracker
         self._detector = ObjectDetector(self.config)
-        self._tracker = BallTracker()
+        self._tracker = get_tracker(self.tracker_backend)
 
     def process_video(self, video_path: str, frame_skip: int = 5,
                       max_frames: Optional[int] = None) -> Dict[str, Any]:
