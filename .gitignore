@@ -223,3 +223,6 @@ backup/
 
 # Keep committed doc diagrams (override *.png)
 !docs/assets/*.png
+
+# Python venv (local API/test stack)
+.venv/

@@ -11,14 +11,25 @@ requires-python = ">=3.10,<3.13"
 license = { text = "MIT" }
 authors = [{ name = "Sathish Kumar", email = "sathishkumar786.ml@gmail.com" }]
 
-# Core runtime — kept light so the app boots without the heavy ML stack.
+# Core runtime (API control plane) — light; the heavy ML stack lives in [vision]
+# and only runs inside the Modal worker.
 dependencies = [
-    "flask>=3.0",
-    "python-dotenv>=1.0",
+    "fastapi>=0.110",
+    "uvicorn[standard]>=0.27",
     "pydantic>=2.0",
+    "pydantic-settings>=2.0",
+    "pyjwt[crypto]>=2.8",        # verify Supabase JWTs
+    "httpx>=0.25",              # async HTTP (Supabase REST / JWKS)
+    "python-multipart>=0.0.9",  # form uploads
+    "supabase>=2.4",            # Supabase Python client (DB/storage/auth admin)
+    "modal>=0.64",             # serverless GPU dispatch
+    "stripe>=9.0",             # billing
+    "python-dotenv>=1.0",
     "pyyaml>=6.0",
     "numpy>=1.24",
     "tqdm>=4.66",
+    # NOTE: flask is being removed as the API migrates to FastAPI (src/api is legacy).
+    "flask>=3.0",
 ]
 
 [project.optional-dependencies]
