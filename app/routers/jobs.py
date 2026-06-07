@@ -12,10 +12,13 @@ Ports the ownership logic from the legacy Flask ``src/api/blueprints/jobs.py``.
 
 from __future__ import annotations
 
+import logging
 from datetime import datetime, timezone
 from typing import Any, Dict, Tuple
 
 from fastapi import APIRouter, Depends, HTTPException, status
+
+log = logging.getLogger("pvllm.jobs")
 
 from app.config import Settings, get_settings
 from app.deps import get_current_user, get_dispatcher, get_repo, get_storage
@@ -69,6 +72,7 @@ def create_job(req: JobCreate, user=Depends(get_current_user), repo: Repo = Depe
     used = repo.get_usage(user["id"], _period())["videos_processed"]
     q = check_quota(sub["plan"], used, settings)
     if not q.ok:
+        log.warning("quota exceeded", extra={"user": user["id"], "plan": q.plan, "used": q.used})
         raise HTTPException(
             status.HTTP_402_PAYMENT_REQUIRED,
             detail={"error": "quota exceeded", "plan": q.plan, "used": q.used,
@@ -91,6 +95,7 @@ def create_job(req: JobCreate, user=Depends(get_current_user), repo: Repo = Depe
         "tracker": req.tracker, "feedback_backend": req.backend,
     })
     repo.update_job(job["id"], modal_call_id=call_id)
+    log.info("job created", extra={"user": user["id"], "job": job["id"], "tracker": req.tracker})
     return JobCreateResponse(job_id=job["id"], status="queued")
 
 

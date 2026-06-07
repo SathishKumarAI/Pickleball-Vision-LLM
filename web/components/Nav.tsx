@@ -1,8 +1,10 @@
 "use client";
 
 import Link from "next/link";
+import { useEffect, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import { api } from "@/lib/api";
 
 const LINKS = [
   ["/dashboard", "Dashboard"],
@@ -16,6 +18,11 @@ export default function Nav() {
   const pathname = usePathname();
   const router = useRouter();
   const supabase = createClient();
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  useEffect(() => {
+    api<{ is_admin?: boolean }>("/auth/me").then((u) => setIsAdmin(!!u.is_admin)).catch(() => {});
+  }, []);
 
   async function signOut() {
     await supabase.auth.signOut();
@@ -35,6 +42,11 @@ export default function Nav() {
             {label}
           </Link>
         ))}
+        {isAdmin && (
+          <Link href="/admin" className={pathname === "/admin" ? "font-semibold text-brand" : "text-slate-600 hover:text-slate-900"}>
+            Admin
+          </Link>
+        )}
         <button onClick={signOut} className="text-slate-500 hover:text-slate-900">Sign out</button>
       </div>
     </nav>
