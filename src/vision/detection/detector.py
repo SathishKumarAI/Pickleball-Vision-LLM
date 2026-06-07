@@ -52,7 +52,10 @@ class ObjectDetector:
             RuntimeError: If model loading fails
         """
         try:
-            model = YOLO(self.config.MODEL_PATH)
+            # MODEL_PATH (explicit weights) takes precedence; otherwise fall back
+            # to DETECTOR_MODEL, which Ultralytics resolves/auto-downloads by name.
+            model_ref = getattr(self.config, "MODEL_PATH", None) or self.config.DETECTOR_MODEL
+            model = YOLO(model_ref)
             return model
         except Exception as e:
             raise RuntimeError(f"Failed to load model: {str(e)}")

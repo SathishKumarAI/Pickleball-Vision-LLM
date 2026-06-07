@@ -64,9 +64,9 @@ entry point is broken, and there is no installable package.
 ## 🔌 Phase 3 — Wire the Pipeline (fill the stubs)
 
 - [x] **3.1** Vision path is now **import-coherent**. Fixed the whole broken-import web: canonical Config moved `fusion/config/config.py` → `src/core/config/config.py` (stray `..logging.logger` import fixed); `detector.py` repointed (`shared.config`→`core.config.config`, `utils.preprocessor`→sibling `.preprocessor`); `video_processor.py` + both llm scripts repointed off the dead `pickleball_vision.*` / `vision.core.*` paths. **Static import scan: 17 broken → 0.** All `src/` parses; app still boots (`/health`→200). Legacy `test_collection.py` moved to `tests/` with a skip guard. (Runtime exec of vision modules still needs the `[vision]` extras — torch/cv2/ultralytics.)
-- [ ] **3.2** Implement empty `llm/{models,prompts,embeddings,analytics}` stubs — game-state → prompt → coaching feedback. (Needs `[llm]` extras to verify.)
-- [ ] **3.3** Implement `integration/{fusion,streaming,analytics}` — connect vision output to LLM input (`fusion` module is the join point).
-- [ ] **3.4** End-to-end orchestrator: one entrypoint runs a clip through vision + LLM → feedback. Re-add a `/detect` Flask blueprint (pattern preserved from the removed `temp/api`).
+- [x] **3.2** Coaching feedback implemented — `src/llm/generate_feedback.py`: `CoachingFeedbackGenerator` with 3 backends (`rule` = dependency-free heuristics, `openai`, `hf`; heavy deps lazy-imported). Uses the existing `PromptTemplates`. Also fixed a pre-existing `src/llm/__init__.py` bug (`EmbeddingModel` → real `EmbeddingGenerator`).
+- [x] **3.3** Game-state fusion implemented — `src/integration/fusion/game_state.py`: `GameStateBuilder` turns per-frame detections (+ ball motion) into structured `GameState` (players/side, ball+velocity, coarse action: no-ball/serve-or-reset/rally/fast-exchange). Pure-Python, unit-testable without the vision stack.
+- [x] **3.4** Orchestrator + API — `src/pipeline.py` (`Pipeline`): full `process_video` (lazy cv2/torch/ultralytics) + dependency-free `analyze_detections` path. Flask `/analyze` + `/analyze/video` blueprint (`src/api/blueprints/analyze.py`) replaces the removed `temp/api`. Fixed detector's `MODEL_PATH`→`DETECTOR_MODEL` fallback. **Verified on this machine (no ML deps):** fusion + feedback + `/analyze`→200 end-to-end; model inference (`process_video`) to be run on a GPU box with `[vision]` extras.
 
 ## 🧪 Phase 4 — Tests, CI, Quality
 

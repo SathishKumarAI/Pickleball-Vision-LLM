@@ -27,7 +27,10 @@ def create_app() -> Flask:
         return jsonify(
             service="pickleball-vision-llm",
             version="0.1.0",
-            endpoints=["/health", "/"],
+            endpoints=["/health", "/", "/analyze", "/analyze/video"],
         )
+
+    from src.api.blueprints.analyze import bp as analyze_bp
+    app.register_blueprint(analyze_bp)
 
     return app

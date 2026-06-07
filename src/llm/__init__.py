@@ -1,3 +1,3 @@
-from .embedding import EmbeddingModel
+from .embedding import EmbeddingGenerator
 
-__all__ = ['EmbeddingModel']
+__all__ = ['EmbeddingGenerator']
