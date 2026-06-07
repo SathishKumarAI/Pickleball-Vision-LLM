@@ -217,3 +217,6 @@ htmlcov/
 
 # Streamlit
 .streamlit/
+
+# Tracked backups bloat the repo — keep on disk, out of git
+backup/
