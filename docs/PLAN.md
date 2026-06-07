@@ -50,12 +50,16 @@ entry point is broken, and there is no installable package.
 
 ## 🧹 Phase 2 — De-duplicate (reduce maintenance surface)
 
-- [ ] **2.1** Merge `src/fusion/utils/` and `src/core/utils/` → single canonical (recommend `src/core/utils/`); update all imports; delete the other. Reconcile the one diff (`metrics.py`).
-- [ ] **2.2** Remove duplicate `src/llm/train_model.py` **or** `src/llm/training/train_model.py` (identical) — keep one, fix refs.
-- [ ] **2.3** Remove duplicate `tracker.py` (`vision/detection/` vs `vision/tracking/`) — keep one home for tracking.
-- [ ] **2.4** Resolve `vision/{detection,preprocessing,tracking,postprocessing}` overlap — define clear module boundaries; `preprocessor.py` should live in one place.
-- [ ] **2.5** Flatten/justify `src/llm/src/` nested package — move its files up into `src/llm/` submodules.
-- [ ] **2.6** Home `src/temp/` contents into real modules; delete `temp/`.
+- [x] **2.1** Merged `src/fusion/utils/` → canonical `src/core/utils/`. Identical copies deleted; unique `data_collector.py` + `visualization.py` moved to core; the two **non-identical** `metrics.py` reconciled — core had classification/pose/game-state + a stubbed tracking; fusion had the real IoU/detection/tracking — both function sets now live in `core/utils/metrics.py`. `fusion/utils/` removed. (No external importers existed.)
+- [x] **2.2** Removed duplicate `src/llm/train_model.py` (kept `src/llm/training/train_model.py`). Byte-identical, zero importers.
+- [x] **2.3** Removed duplicate `src/vision/detection/tracker.py` (kept `src/vision/tracking/tracker.py`). Byte-identical, zero importers.
+- [x] **2.5** Flattened bogus `src/llm/src/` nest — `clip_integration.py`, `generate_feedback.py`, `prompt_templates.py`, `video_llava_connector.py` moved up to `src/llm/`.
+- [ ] **2.4** **Deferred → Phase 3.** `vision/detection/preprocessor.py` (197L) and `vision/preprocessing/preprocessor.py` (144L) differ, and three call sites import `FramePreprocessor` from three different non-existent paths (`vision.utils`, `vision.preprocessor`, `utils`). Resolving = pick canonical + fix `detector.py`'s broken import — belongs with pipeline wiring, not a blind merge.
+- [ ] **2.6** **Deferred → task 1.6.** Home `src/temp/` (broken FastAPI relic) once its detection logic is wired into a Flask blueprint, then delete.
+
+> Per the "use OSS, don't reinvent" directive: left a TODO in `metrics.py` to
+> swap hand-rolled `calculate_iou` for `torchvision.ops.box_iou` / `supervision`
+> once those deps are installed and verifiable.
 
 ## 🔌 Phase 3 — Wire the Pipeline (fill the stubs)
 
