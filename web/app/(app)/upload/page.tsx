@@ -1,14 +1,17 @@
 import UploadDropzone from "@/components/UploadDropzone";
+import { PageHeader } from "@/components/ui";
 
 export default function UploadPage() {
   return (
-    <div className="space-y-6">
-      <h1 className="text-2xl font-bold">Analyze a match</h1>
-      <p className="text-ink/60">
-        Upload a clip (up to 2 minutes, 300 MB). We detect players &amp; the ball,
-        track the rally, and generate a coaching report.
-      </p>
+    <div className="mx-auto max-w-2xl space-y-6">
+      <PageHeader
+        title="Analyze a match"
+        sub="We detect players & the ball, track the rally, and write a coaching report."
+      />
       <UploadDropzone />
+      <p className="text-center text-xs text-ink/45">
+        Your video is processed privately and can be deleted any time in Settings.
+      </p>
     </div>
   );
 }
