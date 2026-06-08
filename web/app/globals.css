@@ -17,9 +17,8 @@ body {
   min-height: 100vh;
 }
 
-@layer base {
-  h1, h2, h3 { @apply font-display tracking-tight; }
-}
+/* Display font is opt-in (brand surfaces add .font-display explicitly).
+   Product/app headings stay on the body sans for calm, legible UI. */
 
 /* ---- Athletic-editorial design system (neo-brutalist) ---- */
 @layer components {
@@ -52,6 +51,28 @@ body {
   .badge {
     @apply inline-flex items-center gap-1 rounded-full border-2 border-ink bg-paper px-3 py-1 text-xs font-bold uppercase tracking-widest;
   }
+
+  /* ---- product register: calmer than the brutalist brand .card ---- */
+  .panel {
+    @apply rounded-xl border border-ink/15 bg-paper;
+    box-shadow: 0 1px 2px rgba(23, 21, 15, 0.04), 0 1px 3px rgba(23, 21, 15, 0.06);
+  }
+  .panel-2 { @apply rounded-xl border border-ink/10 bg-paper-2; }
+
+  .field-label { @apply font-mono text-xs font-bold uppercase tracking-widest text-ink/60; }
+
+  /* status pill — semantic, dot + label */
+  .pill { @apply inline-flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 text-xs font-semibold; }
+  .pill-dot { @apply h-1.5 w-1.5 rounded-full; }
+
+  /* skeleton loading shimmer */
+  .skeleton {
+    @apply rounded-md;
+    background: linear-gradient(90deg, rgba(23,21,15,0.06) 25%, rgba(23,21,15,0.12) 37%, rgba(23,21,15,0.06) 63%);
+    background-size: 400% 100%;
+    animation: sk 1.4s ease infinite;
+  }
+  @keyframes sk { 0% { background-position: 100% 0; } 100% { background-position: 0 0; } }
 
   .muted { @apply text-ink/70; }
   /* text-sm (≥14px) + bold => qualifies as large text, so flame (3.3:1) clears AA 3:1 */

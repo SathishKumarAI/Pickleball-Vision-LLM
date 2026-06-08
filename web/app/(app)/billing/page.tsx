@@ -41,7 +41,7 @@ export default function BillingPage() {
       <h1 className="text-2xl font-bold">Billing</h1>
       <div className="grid gap-6 sm:grid-cols-2">
         {PLANS.map((p) => (
-          <div key={p.id} className="card p-6 text-center">
+          <div key={p.id} className="panel p-6 text-center">
             <h3 className="font-semibold">{p.name}</h3>
             <p className="mt-2 text-3xl font-bold">{p.price}</p>
             <p className="mt-1 text-sm text-ink/60">{p.limit}</p>

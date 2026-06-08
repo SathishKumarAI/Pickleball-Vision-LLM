@@ -14,7 +14,7 @@ export default function CoachingReport({ analysis }: { analysis: Analysis }) {
 
   return (
     <div className="space-y-6">
-      <section className="card p-6">
+      <section className="panel p-6">
         <h2 className="font-semibold">Coaching summary</h2>
         <p className="mt-2 whitespace-pre-line text-ink/80">
           {analysis.summary || "No summary available."}
@@ -22,7 +22,7 @@ export default function CoachingReport({ analysis }: { analysis: Analysis }) {
       </section>
 
       {Object.keys(actions).length > 0 && (
-        <section className="card p-6">
+        <section className="panel p-6">
           <h2 className="font-semibold">Action breakdown</h2>
           <ul className="mt-3 space-y-1 text-sm">
             {Object.entries(actions).map(([action, n]) => (
@@ -36,7 +36,7 @@ export default function CoachingReport({ analysis }: { analysis: Analysis }) {
       )}
 
       {analysis.metrics && (
-        <section className="card p-6">
+        <section className="panel p-6">
           <h2 className="font-semibold">Court analytics</h2>
           <pre className="mt-2 overflow-x-auto text-xs text-ink/60">
             {JSON.stringify(analysis.metrics, null, 2)}

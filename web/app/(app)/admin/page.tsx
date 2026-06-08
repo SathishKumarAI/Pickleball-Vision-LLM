@@ -92,7 +92,7 @@ export default function AdminPage() {
       {/* All jobs */}
       <section>
         <h2 className="mb-2 font-semibold">All jobs ({jobs.length})</h2>
-        <div className="overflow-auto card">
+        <div className="overflow-auto panel">
           <table className="w-full text-sm">
             <thead className="bg-paper-2 text-left text-ink/50">
               <tr><th className="p-2">Job</th><th className="p-2">User</th><th className="p-2">Status</th><th className="p-2">Created</th></tr>

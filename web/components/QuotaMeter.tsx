@@ -13,7 +13,7 @@ export default function QuotaMeter() {
   if (!q) return null;
   const pct = q.videos_limit ? Math.min(100, (q.videos_used / q.videos_limit) * 100) : 0;
   return (
-    <div className="card p-5">
+    <div className="panel p-5">
       <div className="flex items-center justify-between">
         <span className="text-sm font-medium capitalize">{q.plan} plan</span>
         <span className="text-sm text-ink/50">{q.videos_used} / {q.videos_limit} this month</span>

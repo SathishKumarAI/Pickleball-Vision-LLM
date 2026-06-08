@@ -23,7 +23,7 @@ export default function JobProgress({ jobId }: { jobId: string }) {
   const pct = Math.round((job?.progress ?? 0) * 100);
 
   return (
-    <div className="card p-6">
+    <div className="panel p-6">
       <p className="font-medium">{LABEL[job?.status ?? "queued"] ?? job?.status}</p>
       <div className="mt-3 h-3 w-full overflow-hidden rounded-full bg-ink/10">
         <div className="h-full bg-lime transition-all" style={{ width: `${pct}%` }} />
