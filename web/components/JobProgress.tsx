@@ -29,7 +29,7 @@ export default function JobProgress({ jobId }: { jobId: string }) {
         <div className="h-full bg-lime transition-all" style={{ width: `${pct}%` }} />
       </div>
       <p className="mt-2 text-sm text-ink/50">{job?.message || `${pct}%`}</p>
-      {job?.status === "error" && <p className="mt-2 text-sm text-flame">{job.error}</p>}
+      {job?.status === "error" && <p className="mt-2 text-sm font-semibold text-flame">{job.error}</p>}
     </div>
   );
 }

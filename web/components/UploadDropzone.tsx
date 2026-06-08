@@ -65,7 +65,7 @@ export default function UploadDropzone() {
           {busy ? `${stage}…` : "Drop a match video or click to choose (≤300 MB, ≤2 min)"}
         </span>
       </label>
-      {err && <p className="mt-3 text-sm text-flame">{err}</p>}
+      {err && <p className="mt-3 text-sm font-semibold text-flame">{err}</p>}
     </div>
   );
 }

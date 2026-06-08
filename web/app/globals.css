@@ -45,7 +45,7 @@ body {
   .btn-ghost:hover { transform: translate(-2px, -2px); box-shadow: 6px 6px 0 0 var(--ink); }
 
   .input {
-    @apply w-full rounded-lg border-2 border-ink bg-paper px-4 py-2.5 text-ink outline-none placeholder:text-ink/40;
+    @apply w-full rounded-lg border-2 border-ink bg-paper px-4 py-2.5 text-ink outline-none placeholder:text-ink/55;
   }
   .input:focus { box-shadow: 4px 4px 0 0 var(--lime); }
 
@@ -53,9 +53,26 @@ body {
     @apply inline-flex items-center gap-1 rounded-full border-2 border-ink bg-paper px-3 py-1 text-xs font-bold uppercase tracking-widest;
   }
 
-  .muted { @apply text-ink/60; }
-  .eyebrow { @apply font-mono text-xs font-bold uppercase tracking-[0.25em] text-flame; }
+  .muted { @apply text-ink/70; }
+  /* text-sm (≥14px) + bold => qualifies as large text, so flame (3.3:1) clears AA 3:1 */
+  .eyebrow { @apply font-mono text-sm font-bold uppercase tracking-[0.22em] text-flame; }
   .ink-link { @apply font-semibold underline decoration-lime decoration-2 underline-offset-4 hover:decoration-flame; }
+}
+
+/* Keyboard focus — visible, not color-only */
+*:focus-visible {
+  outline: 3px solid var(--ink);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Respect reduced-motion: kill ambient + entrance animation */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
 }
 
 ::selection { background: var(--lime); color: var(--ink); }

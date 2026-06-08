@@ -54,7 +54,7 @@ export default function BillingPage() {
           </div>
         ))}
       </div>
-      <button onClick={portal} className="text-sm text-flame">Manage existing subscription →</button>
+      <button onClick={portal} className="text-sm font-semibold text-flame">Manage existing subscription →</button>
     </div>
   );
 }

@@ -42,7 +42,7 @@ export default function LoginPage() {
                    onChange={(e) => setEmail(e.target.value)} className="input" />
             <input type="password" required placeholder="password (8+ chars)" value={password}
                    onChange={(e) => setPassword(e.target.value)} className="input" />
-            {err && <p className="font-mono text-sm text-flame">{err}</p>}
+            {err && <p className="font-mono text-sm font-semibold text-flame">{err}</p>}
             <button disabled={busy} className="btn-primary w-full">
               {busy ? "…" : mode === "login" ? "Sign in" : "Sign up"}
             </button>

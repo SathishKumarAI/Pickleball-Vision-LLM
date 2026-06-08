@@ -30,7 +30,8 @@ export default function Landing() {
         <div className="grid items-end gap-8 md:grid-cols-12">
           <div className="md:col-span-8">
             <p className="eyebrow animate-fadeup">Est. 2026 · Vision + Language Model</p>
-            <h1 className="mt-4 animate-fadeup font-display text-[14vw] leading-[0.82] md:text-[9rem]">
+            <h1 className="mt-4 animate-fadeup font-display leading-[0.85] [text-wrap:balance]"
+                style={{ fontSize: "clamp(3rem, 11vw, 6rem)" }}>
               YOUR MATCH,
               <br />
               <span className="bg-lime px-2 text-ink shadow-hard">DECODED</span>
@@ -53,7 +54,7 @@ export default function Landing() {
           {[["≤2", "MIN / CLIP"], ["4", "PLAYERS TRACKED"], ["YOLO", "+ ByteTrack"], ["100%", "ON YOUR VIDEO"]].map(([n, l]) => (
             <div key={l} className="bg-paper p-6">
               <div className="font-display text-5xl">{n}</div>
-              <div className="mt-1 font-mono text-[10px] font-bold uppercase tracking-widest text-flame">{l}</div>
+              <div className="mt-1 font-mono text-[10px] font-bold uppercase tracking-widest text-ink/70">{l}</div>
             </div>
           ))}
         </div>
@@ -84,7 +85,7 @@ export default function Landing() {
             <div key={name} className={`card p-7 ${bg} ${i === 1 ? "shadow-hard-lg md:-translate-y-2" : "card-hover"}`}>
               <h3 className="font-display text-3xl">{name}</h3>
               <p className="mt-3 font-display text-6xl">{price}</p>
-              <p className={`mt-1 font-mono text-xs uppercase tracking-widest ${i === 1 ? "text-paper/80" : "text-flame"}`}>{limit}</p>
+              <p className={`mt-1 font-mono text-xs uppercase tracking-widest ${i === 1 ? "text-paper/80" : "text-ink/70"}`}>{limit}</p>
               <Link href="/login" className={`mt-6 w-full ${i === 1 ? "btn-ghost" : "btn-primary"}`}>Pick this →</Link>
             </div>
           ))}
