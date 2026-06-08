@@ -1,102 +1,100 @@
 import Link from "next/link";
 
-const FEATURES = [
-  ["🎥", "Annotated replay", "Player & ball tracking, IDs, and ball trail rendered onto your video."],
-  ["📊", "Court analytics", "Position heatmaps, kitchen usage, rally tempo, and shot labels."],
-  ["🧠", "AI coaching", "Actionable feedback on strategy, positioning, and movement."],
-];
+const MARQUEE = "SERVE · DINK · DRIVE · VOLLEY · LOB · ERNE · KITCHEN · RALLY · ";
 
-const PLANS = [
-  ["Free", "$0", "3 videos / month", false],
-  ["Pro", "$39", "500 videos / month", true],
-  ["Starter", "$12", "50 videos / month", false],
+const FEATURES = [
+  ["01", "Annotated Replay", "Every player and the ball, tracked and labeled — rendered back onto your footage."],
+  ["02", "Court Almanac", "Position heatmaps, kitchen time, rally tempo, shot-by-shot breakdown."],
+  ["03", "Coach's Notes", "Plain-language feedback on positioning, shot choice, and strategy."],
 ];
 
 export default function Landing() {
   return (
-    <main className="relative overflow-hidden">
-      {/* glow orbs */}
-      <div className="pointer-events-none absolute -top-40 left-1/2 h-96 w-96 -translate-x-1/2 rounded-full bg-court/20 blur-[120px]" />
-      <div className="pointer-events-none absolute top-40 right-0 h-80 w-80 rounded-full bg-ball/10 blur-[120px]" />
-
-      {/* nav */}
+    <main className="relative">
+      {/* top bar */}
       <header className="mx-auto flex max-w-6xl items-center justify-between px-6 py-6">
-        <span className="font-display text-lg font-bold">🏓 Pickleball<span className="gradient-text">Vision</span></span>
+        <span className="font-display text-2xl">PICKLEBALL<span className="text-flame">.</span>VISION</span>
         <Link href="/login" className="btn-ghost py-2">Sign in</Link>
       </header>
 
-      {/* hero */}
-      <section className="mx-auto max-w-6xl px-6 pb-24 pt-12 text-center">
-        <div className="badge mx-auto animate-fadeup">⚡ Vision + LLM · results in minutes</div>
-        <h1 className="mx-auto mt-6 max-w-3xl animate-fadeup font-display text-5xl font-bold leading-[1.05] tracking-tight sm:text-6xl">
-          Your match, <span className="gradient-text">analyzed by AI</span>.
-          <span className="relative ml-3 inline-block animate-floaty">🏓</span>
-        </h1>
-        <p className="muted mx-auto mt-6 max-w-2xl animate-fadeup text-lg">
-          Upload a clip. Get an annotated replay with player &amp; ball tracking,
-          court-aware analytics, and a personalized coaching report.
-        </p>
-        <div className="mt-9 flex animate-fadeup items-center justify-center gap-4">
-          <Link href="/login" className="btn-primary">Analyze my match →</Link>
-          <Link href="#pricing" className="btn-ghost">See pricing</Link>
+      {/* marquee strip */}
+      <div className="border-y-2 border-ink bg-ink py-2 text-paper">
+        <div className="flex whitespace-nowrap font-mono text-sm font-bold uppercase tracking-[0.3em]">
+          <span className="animate-marquee">{MARQUEE.repeat(4)}</span>
+          <span className="animate-marquee">{MARQUEE.repeat(4)}</span>
         </div>
+      </div>
 
-        {/* mock app frame */}
-        <div className="card mx-auto mt-16 max-w-4xl overflow-hidden p-2 animate-fadeup">
-          <div className="rounded-xl border border-white/5 bg-ink-800/60 p-6 text-left">
-            <div className="mb-4 flex gap-1.5">
-              <span className="h-3 w-3 rounded-full bg-red-400/70" />
-              <span className="h-3 w-3 rounded-full bg-yellow-400/70" />
-              <span className="h-3 w-3 rounded-full bg-green-400/70" />
-            </div>
-            <div className="grid gap-4 sm:grid-cols-3">
-              {["Players: 4", "Ball: tracked", "Action: rally"].map((t) => (
-                <div key={t} className="rounded-lg border border-white/10 bg-white/[0.03] p-4 text-sm">
-                  <span className="gradient-text font-semibold">{t}</span>
-                </div>
-              ))}
-            </div>
-            <div className="mt-4 h-2 overflow-hidden rounded-full bg-white/5">
-              <div className="h-full w-2/3 animate-shimmer rounded-full bg-grad-brand bg-[length:200%_100%]" />
+      {/* HERO — poster */}
+      <section className="mx-auto max-w-6xl px-6 pb-10 pt-14">
+        <div className="grid items-end gap-8 md:grid-cols-12">
+          <div className="md:col-span-8">
+            <p className="eyebrow animate-fadeup">Est. 2026 · Vision + Language Model</p>
+            <h1 className="mt-4 animate-fadeup font-display text-[14vw] leading-[0.82] md:text-[9rem]">
+              YOUR MATCH,
+              <br />
+              <span className="bg-lime px-2 text-ink shadow-hard">DECODED</span>
+              <span className="ml-2 inline-block animate-floaty">🏓</span>
+            </h1>
+          </div>
+          <div className="md:col-span-4">
+            <p className="animate-fadeup font-serif text-xl italic text-ink-soft">
+              Upload a clip. Get an annotated replay and a coaching almanac of your
+              game — players, ball, court &amp; strategy — in minutes.
+            </p>
+            <div className="mt-6 flex animate-fadeup gap-3">
+              <Link href="/login" className="btn-primary">Analyze a match →</Link>
             </div>
           </div>
         </div>
+
+        {/* stat band */}
+        <div className="mt-14 grid grid-cols-2 gap-px overflow-hidden rounded-xl border-2 border-ink bg-ink shadow-hard md:grid-cols-4">
+          {[["≤2", "MIN / CLIP"], ["4", "PLAYERS TRACKED"], ["YOLO", "+ ByteTrack"], ["100%", "ON YOUR VIDEO"]].map(([n, l]) => (
+            <div key={l} className="bg-paper p-6">
+              <div className="font-display text-5xl">{n}</div>
+              <div className="mt-1 font-mono text-[10px] font-bold uppercase tracking-widest text-flame">{l}</div>
+            </div>
+          ))}
+        </div>
       </section>
 
-      {/* features */}
+      {/* FEATURES — editorial numbered */}
       <section className="mx-auto max-w-6xl px-6 py-12">
-        <div className="grid gap-6 sm:grid-cols-3">
-          {FEATURES.map(([icon, title, body]) => (
-            <div key={title} className="card card-hover p-6">
-              <div className="text-3xl">{icon}</div>
-              <h3 className="mt-3 font-display font-semibold">{title}</h3>
-              <p className="muted mt-2 text-sm">{body}</p>
+        <div className="grid gap-6 md:grid-cols-3">
+          {FEATURES.map(([n, title, body], i) => (
+            <div key={title} className={`card card-hover p-6 ${i === 1 ? "bg-lime" : ""}`}>
+              <div className="font-mono text-sm font-bold text-flame">{n}</div>
+              <h3 className="mt-2 font-display text-3xl leading-none">{title}</h3>
+              <p className="mt-3 text-sm text-ink/70">{body}</p>
             </div>
           ))}
         </div>
       </section>
 
-      {/* pricing */}
+      {/* PRICING */}
       <section id="pricing" className="mx-auto max-w-6xl px-6 py-16">
-        <h2 className="text-center font-display text-3xl font-bold">Simple pricing</h2>
-        <div className="mt-10 grid items-center gap-6 sm:grid-cols-3">
-          {PLANS.map(([name, price, limit, featured]) => (
-            <div key={name as string}
-                 className={`card p-7 text-center ${featured ? "border-court/40 shadow-glow sm:scale-105" : "card-hover"}`}>
-              {featured ? <div className="badge mx-auto mb-3 border-ball/30 text-ball">Most popular</div> : null}
-              <h3 className="font-display font-semibold">{name}</h3>
-              <p className="mt-2 font-display text-4xl font-bold">{price}</p>
-              <p className="muted mt-1 text-sm">{limit}</p>
-              <Link href="/login" className={`mt-5 w-full ${featured ? "btn-primary" : "btn-ghost"}`}>
-                Get started
-              </Link>
+        <h2 className="font-display text-6xl">THE LINEUP</h2>
+        <div className="mt-8 grid gap-6 md:grid-cols-3">
+          {[
+            ["FREE", "$0", "3 videos / mo", "bg-paper"],
+            ["PRO", "$39", "500 videos / mo", "bg-flame text-paper"],
+            ["STARTER", "$12", "50 videos / mo", "bg-paper"],
+          ].map(([name, price, limit, bg], i) => (
+            <div key={name} className={`card p-7 ${bg} ${i === 1 ? "shadow-hard-lg md:-translate-y-2" : "card-hover"}`}>
+              <h3 className="font-display text-3xl">{name}</h3>
+              <p className="mt-3 font-display text-6xl">{price}</p>
+              <p className={`mt-1 font-mono text-xs uppercase tracking-widest ${i === 1 ? "text-paper/80" : "text-flame"}`}>{limit}</p>
+              <Link href="/login" className={`mt-6 w-full ${i === 1 ? "btn-ghost" : "btn-primary"}`}>Pick this →</Link>
             </div>
           ))}
         </div>
       </section>
 
-      <footer className="mx-auto max-w-6xl px-6 py-10 text-center text-sm text-slate-500">
-        🏓 PickleballVision — AI game analysis.
+      <footer className="border-t-2 border-ink">
+        <div className="mx-auto max-w-6xl px-6 py-8 font-mono text-xs uppercase tracking-widest text-ink/60">
+          🏓 Pickleball.Vision — AI game almanac · © 2026
+        </div>
       </footer>
     </main>
   );

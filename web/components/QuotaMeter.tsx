@@ -16,10 +16,10 @@ export default function QuotaMeter() {
     <div className="card p-5">
       <div className="flex items-center justify-between">
         <span className="text-sm font-medium capitalize">{q.plan} plan</span>
-        <span className="text-sm text-slate-500">{q.videos_used} / {q.videos_limit} this month</span>
+        <span className="text-sm text-ink/50">{q.videos_used} / {q.videos_limit} this month</span>
       </div>
-      <div className="mt-2 h-2 w-full overflow-hidden rounded-full bg-white/10">
-        <div className="h-full bg-grad-brand" style={{ width: `${pct}%` }} />
+      <div className="mt-2 h-2 w-full overflow-hidden rounded-full bg-ink/10">
+        <div className="h-full bg-lime" style={{ width: `${pct}%` }} />
       </div>
     </div>
   );

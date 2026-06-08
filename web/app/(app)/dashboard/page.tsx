@@ -27,15 +27,15 @@ export default function Dashboard() {
       <section>
         <h2 className="mb-3 font-semibold">Recent analyses</h2>
         {jobs.length === 0 ? (
-          <p className="text-slate-500">No analyses yet — upload your first match.</p>
+          <p className="text-ink/50">No analyses yet — upload your first match.</p>
         ) : (
-          <ul className="divide-y divide-white/10 card">
+          <ul className="divide-y divide-ink/15 card">
             {jobs.map((j) => (
               <li key={j.id} className="flex items-center justify-between px-4 py-3">
-                <Link href={j.status === "done" ? `/analyses/${j.id}` : `/jobs/${j.id}`} className="text-court">
+                <Link href={j.status === "done" ? `/analyses/${j.id}` : `/jobs/${j.id}`} className="text-flame">
                   {j.id.slice(0, 8)}…
                 </Link>
-                <span className="text-sm capitalize text-slate-500">{j.status}</span>
+                <span className="text-sm capitalize text-ink/50">{j.status}</span>
               </li>
             ))}
           </ul>

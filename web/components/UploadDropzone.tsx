@@ -56,16 +56,16 @@ export default function UploadDropzone() {
 
   return (
     <div>
-      <label className="flex h-48 cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed border-white/15 bg-white/[0.03] hover:border-court">
+      <label className="flex h-48 cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed border-ink bg-paper-2 hover:border-flame">
         <input
           type="file" accept="video/*" className="hidden" disabled={busy}
           onChange={(e) => e.target.files?.[0] && handle(e.target.files[0])}
         />
-        <span className="text-slate-500">
+        <span className="text-ink/50">
           {busy ? `${stage}…` : "Drop a match video or click to choose (≤300 MB, ≤2 min)"}
         </span>
       </label>
-      {err && <p className="mt-3 text-sm text-red-400">{err}</p>}
+      {err && <p className="mt-3 text-sm text-flame">{err}</p>}
     </div>
   );
 }

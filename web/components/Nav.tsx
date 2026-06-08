@@ -30,20 +30,21 @@ export default function Nav() {
   }
 
   const cls = (active: boolean) =>
-    active ? "text-ball" : "text-slate-400 hover:text-slate-100";
+    active ? "text-ink underline decoration-lime decoration-2 underline-offset-4"
+           : "text-ink/60 hover:text-ink";
 
   return (
-    <nav className="sticky top-0 z-30 border-b border-white/10 bg-ink/70 backdrop-blur-xl">
+    <nav className="sticky top-0 z-30 border-b-2 border-ink bg-paper">
       <div className="mx-auto flex max-w-5xl items-center justify-between px-6 py-3.5">
-        <Link href="/dashboard" className="font-display font-bold">
-          🏓 Pickleball<span className="gradient-text">Vision</span>
+        <Link href="/dashboard" className="font-display text-xl">
+          PICKLEBALL<span className="text-flame">.</span>VISION
         </Link>
-        <div className="flex items-center gap-5 text-sm">
+        <div className="flex items-center gap-5 font-mono text-xs font-bold uppercase tracking-wider">
           {LINKS.map(([href, label]) => (
             <Link key={href} href={href} className={`transition ${cls(pathname === href)}`}>{label}</Link>
           ))}
           {isAdmin && <Link href="/admin" className={`transition ${cls(pathname === "/admin")}`}>Admin</Link>}
-          <button onClick={signOut} className="rounded-lg border border-white/10 px-3 py-1.5 text-slate-400 transition hover:border-white/30 hover:text-slate-100">
+          <button onClick={signOut} className="rounded-md border-2 border-ink px-3 py-1.5 transition hover:bg-flame hover:text-paper">
             Sign out
           </button>
         </div>

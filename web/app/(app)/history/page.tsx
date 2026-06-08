@@ -16,16 +16,16 @@ export default function HistoryPage() {
     <div className="space-y-6">
       <h1 className="text-2xl font-bold">Match history</h1>
       {jobs.length === 0 ? (
-        <p className="text-slate-500">Nothing here yet.</p>
+        <p className="text-ink/50">Nothing here yet.</p>
       ) : (
-        <ul className="divide-y divide-white/10 card">
+        <ul className="divide-y divide-ink/15 card">
           {jobs.map((j) => (
             <li key={j.id} className="flex items-center justify-between px-4 py-3">
-              <Link href={j.status === "done" ? `/analyses/${j.id}` : `/jobs/${j.id}`} className="text-court">
+              <Link href={j.status === "done" ? `/analyses/${j.id}` : `/jobs/${j.id}`} className="text-flame">
                 {j.id.slice(0, 8)}…
               </Link>
-              <span className="text-xs text-slate-400">{j.created_at?.slice(0, 16).replace("T", " ")}</span>
-              <span className="text-sm capitalize text-slate-500">{j.status}</span>
+              <span className="text-xs text-ink/60">{j.created_at?.slice(0, 16).replace("T", " ")}</span>
+              <span className="text-sm capitalize text-ink/50">{j.status}</span>
             </li>
           ))}
         </ul>

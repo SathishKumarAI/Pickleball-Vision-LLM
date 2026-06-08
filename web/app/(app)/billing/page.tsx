@@ -44,7 +44,7 @@ export default function BillingPage() {
           <div key={p.id} className="card p-6 text-center">
             <h3 className="font-semibold">{p.name}</h3>
             <p className="mt-2 text-3xl font-bold">{p.price}</p>
-            <p className="mt-1 text-sm text-slate-400">{p.limit}</p>
+            <p className="mt-1 text-sm text-ink/60">{p.limit}</p>
             <button
               onClick={() => checkout(p.id)} disabled={busy === p.id}
               className="mt-4 w-full rounded-lg btn-primary w-full disabled:opacity-50"
@@ -54,7 +54,7 @@ export default function BillingPage() {
           </div>
         ))}
       </div>
-      <button onClick={portal} className="text-sm text-court">Manage existing subscription →</button>
+      <button onClick={portal} className="text-sm text-flame">Manage existing subscription →</button>
     </div>
   );
 }

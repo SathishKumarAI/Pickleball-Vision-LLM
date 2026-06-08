@@ -16,7 +16,7 @@ export default function CoachingReport({ analysis }: { analysis: Analysis }) {
     <div className="space-y-6">
       <section className="card p-6">
         <h2 className="font-semibold">Coaching summary</h2>
-        <p className="mt-2 whitespace-pre-line text-slate-300">
+        <p className="mt-2 whitespace-pre-line text-ink/80">
           {analysis.summary || "No summary available."}
         </p>
       </section>
@@ -28,7 +28,7 @@ export default function CoachingReport({ analysis }: { analysis: Analysis }) {
             {Object.entries(actions).map(([action, n]) => (
               <li key={action} className="flex justify-between">
                 <span className="capitalize">{action.replace(/-/g, " ")}</span>
-                <span className="text-slate-500">{n} frames</span>
+                <span className="text-ink/50">{n} frames</span>
               </li>
             ))}
           </ul>
@@ -38,7 +38,7 @@ export default function CoachingReport({ analysis }: { analysis: Analysis }) {
       {analysis.metrics && (
         <section className="card p-6">
           <h2 className="font-semibold">Court analytics</h2>
-          <pre className="mt-2 overflow-x-auto text-xs text-slate-400">
+          <pre className="mt-2 overflow-x-auto text-xs text-ink/60">
             {JSON.stringify(analysis.metrics, null, 2)}
           </pre>
         </section>

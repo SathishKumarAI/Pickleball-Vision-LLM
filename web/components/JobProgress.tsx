@@ -25,11 +25,11 @@ export default function JobProgress({ jobId }: { jobId: string }) {
   return (
     <div className="card p-6">
       <p className="font-medium">{LABEL[job?.status ?? "queued"] ?? job?.status}</p>
-      <div className="mt-3 h-3 w-full overflow-hidden rounded-full bg-white/10">
-        <div className="h-full bg-grad-brand transition-all" style={{ width: `${pct}%` }} />
+      <div className="mt-3 h-3 w-full overflow-hidden rounded-full bg-ink/10">
+        <div className="h-full bg-lime transition-all" style={{ width: `${pct}%` }} />
       </div>
-      <p className="mt-2 text-sm text-slate-500">{job?.message || `${pct}%`}</p>
-      {job?.status === "error" && <p className="mt-2 text-sm text-red-400">{job.error}</p>}
+      <p className="mt-2 text-sm text-ink/50">{job?.message || `${pct}%`}</p>
+      {job?.status === "error" && <p className="mt-2 text-sm text-flame">{job.error}</p>}
     </div>
   );
 }
