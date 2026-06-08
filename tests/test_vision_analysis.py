@@ -38,6 +38,17 @@ def test_trajectory_handles_gaps():
     assert s.n_detected == 3 and s.path.shape == (5, 2)
 
 
+def test_trajectory_rejects_detection_spike():
+    # clean ball moving steadily, with one wild false detection injected
+    cents = [[float(i * 5), 100.0] for i in range(12)]
+    cents[6] = [900.0, 700.0]   # bogus spike (jersey/logo false positive)
+    noisy = analyze_trajectory(cents, reject_outliers=False)
+    clean = analyze_trajectory(cents, reject_outliers=True)
+    assert noisy.max_speed > 200          # spike injects huge velocity
+    assert clean.n_rejected >= 1
+    assert clean.max_speed < noisy.max_speed / 3   # spike removed
+
+
 # -- shot classification -----------------------------------------------------
 
 def test_classify_drive():

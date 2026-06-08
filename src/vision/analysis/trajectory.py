@@ -38,11 +38,13 @@ class TrajectoryStats:
     max_speed: float = 0.0
     mean_speed: float = 0.0
     apex_height_px: float = 0.0        # vertical span of the arc
+    n_rejected: int = 0                # detection spikes removed as outliers
 
     def to_dict(self) -> dict:
         return {
             "n_frames": self.n_frames,
             "n_detected": self.n_detected,
+            "n_rejected": self.n_rejected,
             "bounces": [{"frame": b.frame, "position": list(b.position)} for b in self.bounces],
             "peak_frame": self.peak_frame,
             "max_speed_px": round(self.max_speed, 2),
@@ -60,6 +62,53 @@ def _interpolate_gaps(xs: np.ndarray) -> np.ndarray:
     if good.sum() == 1:
         return np.full_like(xs, xs[good][0])
     return np.interp(idx, idx[good], xs[good])
+
+
+def _median_filter(a: np.ndarray, w: int = 5) -> np.ndarray:
+    """Median filter (prefer scipy; numpy sliding fallback)."""
+    try:
+        from scipy.ndimage import median_filter  # OSS engine
+        return median_filter(a, size=w, mode="nearest")
+    except ImportError:
+        half = w // 2
+        out = a.copy()
+        for i in range(len(a)):
+            lo, hi = max(0, i - half), min(len(a), i + half + 1)
+            out[i] = np.median(a[lo:hi])
+        return out
+
+
+def _reject_outliers(x: np.ndarray, y: np.ndarray, k: float = 2.5,
+                     max_jump_px: Optional[float] = None,
+                     min_spike: float = 15.0) -> Tuple[np.ndarray, np.ndarray, int]:
+    """Replace **isolated detection spikes** with the neighbour midpoint.
+
+    A bad detection (jersey/logo/line false positive) is a point that jumps far away
+    then returns the next frame: both edges to it are large, but the "bridge" between
+    its neighbours is small. A real apex/bounce is the opposite — gradual, with the
+    bridge ≈ sum of edges — so this leaves true extrema untouched (unlike a plain
+    median filter, which flattens them).
+
+    Flag i when ``min(jump_in, jump_out) > k·bridge + min_spike`` (or > ``max_jump_px``).
+    Returns (x, y, n_rejected).
+    """
+    n = len(x)
+    if n < 3:
+        return x, y, 0
+    rejected = 0
+    for i in range(1, n - 1):
+        jin = float(np.hypot(x[i] - x[i - 1], y[i] - y[i - 1]))
+        jout = float(np.hypot(x[i + 1] - x[i], y[i + 1] - y[i]))
+        bridge = float(np.hypot(x[i + 1] - x[i - 1], y[i + 1] - y[i - 1]))
+        edge = min(jin, jout)
+        is_spike = edge > k * bridge + min_spike
+        if max_jump_px is not None:
+            is_spike = is_spike or edge > max_jump_px
+        if is_spike:
+            x[i] = (x[i - 1] + x[i + 1]) / 2.0
+            y[i] = (y[i - 1] + y[i + 1]) / 2.0
+            rejected += 1
+    return x, y, rejected
 
 
 def _smooth(a: np.ndarray, w: int) -> np.ndarray:
@@ -81,13 +130,19 @@ def _smooth(a: np.ndarray, w: int) -> np.ndarray:
 
 
 def analyze_trajectory(centroids: Sequence[Point], smooth_window: int = 3,
-                       min_bounce_speed: float = 1.0) -> TrajectoryStats:
+                       min_bounce_speed: float = 1.0, reject_outliers: bool = True,
+                       outlier_k: float = 4.0,
+                       max_jump_px: Optional[float] = None) -> TrajectoryStats:
     """Compute trajectory kinematics + bounces from ball centroids.
 
     Args:
         centroids: per-frame [x, y] or None.
-        smooth_window: moving-average window for de-noising the path.
+        smooth_window: window for de-noising the path.
         min_bounce_speed: ignore direction flips slower than this (jitter guard).
+        reject_outliers: replace detection spikes with a local median (robust to a
+            noisy/imperfect detector — see _reject_outliers).
+        outlier_k: MAD multiplier for the outlier threshold.
+        max_jump_px: optional hard cap on plausible per-frame displacement.
     """
     n = len(centroids)
     raw = np.array([[np.nan, np.nan] if c is None else [float(c[0]), float(c[1])]
@@ -99,8 +154,13 @@ def analyze_trajectory(centroids: Sequence[Point], smooth_window: int = 3,
                                path=np.zeros((n, 2)), velocity=np.zeros((n, 2)),
                                speed=np.zeros(n))
 
-    x = _smooth(_interpolate_gaps(raw[:, 0]), smooth_window)
-    y = _smooth(_interpolate_gaps(raw[:, 1]), smooth_window)
+    x = _interpolate_gaps(raw[:, 0])
+    y = _interpolate_gaps(raw[:, 1])
+    n_rejected = 0
+    if reject_outliers:
+        x, y, n_rejected = _reject_outliers(x, y, k=outlier_k, max_jump_px=max_jump_px)
+    x = _smooth(x, smooth_window)
+    y = _smooth(y, smooth_window)
     path = np.column_stack([x, y])
 
     velocity = np.zeros_like(path)
@@ -108,6 +168,15 @@ def analyze_trajectory(centroids: Sequence[Point], smooth_window: int = 3,
         velocity[1:] = np.diff(path, axis=0)
         velocity[0] = velocity[1]
     speed = np.linalg.norm(velocity, axis=1)
+
+    # Gap-aware speed: a velocity is real only when *both* endpoints were actually
+    # detected. Velocity across an interpolated gap is an artefact of filling, not
+    # ball motion — excluding it stops sparse detections inflating max/mean speed.
+    detected = ~np.isnan(raw[:, 0])
+    valid_vel = detected.copy()
+    valid_vel[1:] &= detected[:-1]
+    valid_vel[0] = False
+    real_speed = speed[valid_vel]
 
     # Bounces: vertical velocity flips from down (+) to up (-) => local max in y.
     vy = velocity[:, 1]
@@ -120,8 +189,9 @@ def analyze_trajectory(centroids: Sequence[Point], smooth_window: int = 3,
     return TrajectoryStats(
         n_frames=n, n_detected=n_detected, path=path, velocity=velocity, speed=speed,
         bounces=bounces, peak_frame=peak_frame,
-        max_speed=float(speed.max()), mean_speed=float(speed.mean()),
-        apex_height_px=float(y.max() - y.min()),
+        max_speed=float(real_speed.max()) if real_speed.size else float(speed.max()),
+        mean_speed=float(real_speed.mean()) if real_speed.size else float(speed.mean()),
+        apex_height_px=float(y.max() - y.min()), n_rejected=n_rejected,
     )
 
 
