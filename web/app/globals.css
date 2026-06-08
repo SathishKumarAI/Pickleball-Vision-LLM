@@ -6,51 +6,62 @@
   color-scheme: dark;
   --font-inter: "Inter", system-ui, -apple-system, sans-serif;
   --font-display: "Space Grotesk", var(--font-inter);
+  --grad-brand: linear-gradient(100deg, #15c6a3, #d4f000);
 }
 
 body {
   @apply bg-ink text-slate-200 antialiased;
-  background-image: theme("backgroundImage.grad-ink");
+  background-image:
+    radial-gradient(1200px 600px at 70% -10%, rgba(21, 198, 163, 0.18), transparent),
+    radial-gradient(900px 500px at 10% 10%, rgba(212, 240, 0, 0.10), transparent);
   background-attachment: fixed;
   min-height: 100vh;
 }
 
-/* Component layer — the design system */
+/* Design system — raw CSS for custom bits (robust in dev + prod) */
 @layer components {
   .card {
-    @apply rounded-2xl border border-white/10 bg-white/[0.04] backdrop-blur-xl shadow-card;
+    @apply rounded-2xl border border-white/10 backdrop-blur-xl;
+    background: rgba(255, 255, 255, 0.04);
+    box-shadow: 0 10px 40px -12px rgba(0, 0, 0, 0.6);
   }
-  .card-hover { @apply transition hover:border-court/40 hover:bg-white/[0.06]; }
+  .card-hover { @apply transition; }
+  .card-hover:hover { border-color: rgba(21, 198, 163, 0.4); background: rgba(255, 255, 255, 0.06); }
 
   .btn-primary {
-    @apply inline-flex items-center justify-center rounded-xl bg-grad-brand px-5 py-2.5
-           font-semibold text-ink shadow-glow transition hover:brightness-110 active:scale-[.98]
-           disabled:opacity-50;
+    @apply inline-flex items-center justify-center rounded-xl px-5 py-2.5 font-semibold transition active:scale-[.98] disabled:opacity-50;
+    background: var(--grad-brand);
+    color: #0a0f1e;
+    box-shadow: 0 0 0 1px rgba(212, 240, 0, 0.25), 0 8px 40px -8px rgba(212, 240, 0, 0.35);
   }
+  .btn-primary:hover { filter: brightness(1.1); }
+
   .btn-ghost {
-    @apply inline-flex items-center justify-center rounded-xl border border-white/15 px-5 py-2.5
-           font-semibold text-slate-200 transition hover:border-white/30 hover:bg-white/5;
+    @apply inline-flex items-center justify-center rounded-xl border border-white/15 px-5 py-2.5 font-semibold text-slate-200 transition hover:border-white/30 hover:bg-white/5;
   }
 
   .input {
-    @apply w-full rounded-xl border border-white/10 bg-white/[0.03] px-4 py-2.5 text-slate-100
-           placeholder:text-slate-500 outline-none transition focus:border-court/60 focus:bg-white/[0.05];
+    @apply w-full rounded-xl border border-white/10 px-4 py-2.5 text-slate-100 outline-none transition placeholder:text-slate-500;
+    background: rgba(255, 255, 255, 0.03);
   }
+  .input:focus { border-color: rgba(21, 198, 163, 0.6); background: rgba(255, 255, 255, 0.05); }
 
   .badge {
-    @apply inline-flex items-center gap-1 rounded-full border border-white/10 bg-white/5 px-3 py-1
-           text-xs font-medium text-slate-300;
+    @apply inline-flex items-center gap-1 rounded-full border border-white/10 px-3 py-1 text-xs font-medium text-slate-300;
+    background: rgba(255, 255, 255, 0.05);
   }
 
   .gradient-text {
-    @apply bg-grad-brand bg-clip-text text-transparent;
+    background: var(--grad-brand);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
   }
 
   .muted { @apply text-slate-400; }
 }
 
-/* Slick scrollbar */
 ::-webkit-scrollbar { width: 10px; height: 10px; }
 ::-webkit-scrollbar-thumb { @apply rounded-full bg-white/10; }
 ::-webkit-scrollbar-thumb:hover { @apply bg-white/20; }
-::selection { @apply bg-ball/30 text-white; }
+::selection { background: rgba(212, 240, 0, 0.3); color: #fff; }
