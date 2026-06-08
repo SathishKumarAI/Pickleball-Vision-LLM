@@ -67,5 +67,16 @@ fallback). Set the Pipeline `tracker_backend="supervision"`.
 ### Quick decision for the GPU box
 1. `pip install -e ".[vision,llm]"`.
 2. Set `DETECTOR_MODEL` to a Roboflow pickleball weight (GameChangerv1 first).
-3. `Pipeline(tracker_backend="supervision")`.
+3. `Pipeline(tracker_backend="supervision")` (or `"botsort"` for ReID).
 4. Optionally add TrackNet for the ball channel.
+
+## Wired adapters (lazy; run on GPU box)
+All wrap OSS — interface-compatible, selected by a factory:
+- **Detection:** `src/vision/detection/roboflow_detector.py` → `get_detector("roboflow"|"ultralytics")` (Roboflow `inference` SDK / Ultralytics YOLO).
+- **Tracking:** `src/vision/tracking/tracker.py` → `get_tracker("simple"|"supervision"|"botsort")` — **BoT-SORT + ReID via `boxmot`** for occlusion (fixes ID-switch).
+- **Ball:** `src/vision/tracking/tracknet_ball.py` → `TrackNetBall` (heatmap; vendor TrackNetV3 / yastrebksv weights).
+
+## Analytics (no GPU — pure scipy/sklearn)
+`src/vision/analysis/` — trajectory (scipy savgol), shot classifier (sklearn-pluggable
+head), rally segmentation. Feeds `pipeline` → `result["intelligence"]`. Target metric
+set: `docs/inspiration/pb-vision/`.

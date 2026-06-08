@@ -102,10 +102,53 @@ class SupervisionTracker:
         return out
 
 
+class BotSortTracker:
+    """BoT-SORT **with ReID** via the OSS ``boxmot`` library.
+
+    ByteTrack swaps IDs under occlusion (the per-player coaching gap); BoT-SORT adds
+    appearance re-identification to re-anchor IDs after players cross. Lazy-imports
+    boxmot/torch — runs on the GPU box. Returns detections enriched with stable
+    ``tracker_id``.
+    """
+
+    def __init__(self, reid_weights: str = "osnet_x0_25_msmt17.pt", device: str = "cpu",
+                 half: bool = False):
+        self._args = (reid_weights, device, half)
+        self._tracker = None
+
+    def _ensure(self):
+        if self._tracker is None:
+            from pathlib import Path
+            from boxmot import BoTSORT  # lazy (OSS)
+            reid, device, half = self._args
+            self._tracker = BoTSORT(reid_weights=Path(reid), device=device, half=half)
+        return self._tracker
+
+    def update(self, detections: List[Dict[str, Any]], frame: Any = None) -> List[Dict[str, Any]]:
+        import numpy as np
+        tracker = self._ensure()
+        if not detections:
+            return []
+        dets = np.array([[*d["bbox"], d.get("confidence", 0.0), d.get("class_id", 0)]
+                         for d in detections], dtype=float)
+        tracks = tracker.update(dets, frame)  # -> [x1,y1,x2,y2,id,conf,cls,idx]
+        out: List[Dict[str, Any]] = []
+        for t in tracks:
+            out.append({
+                "bbox": [float(t[0]), float(t[1]), float(t[2]), float(t[3])],
+                "tracker_id": int(t[4]), "confidence": float(t[5]),
+                "class_id": int(t[6]),
+            })
+        return out
+
+
 def get_tracker(backend: str = "simple", **kwargs: Any):
-    """Factory: ``simple`` (no deps) or ``supervision`` (ByteTrack)."""
+    """Factory: ``simple`` (no deps) · ``supervision`` (ByteTrack) ·
+    ``botsort`` (BoT-SORT + ReID via boxmot, GPU)."""
     if backend == "simple":
         return BallTracker()
     if backend == "supervision":
         return SupervisionTracker(**kwargs)
+    if backend == "botsort":
+        return BotSortTracker(**kwargs)
     raise ValueError(f"Unknown tracker backend: {backend!r}")

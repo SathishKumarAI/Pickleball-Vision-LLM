@@ -39,6 +39,7 @@ vision = [
     "ultralytics>=8.0",
     "supervision>=0.20",   # ByteTrack tracking + annotators (don't reinvent)
     "inference>=0.9",       # Roboflow hosted/edge pickleball model inference
+    "boxmot>=10.0",         # BoT-SORT / ReID multi-object tracking (occlusion)
     "mediapipe>=0.10",
     "pillow>=10.0",
     "imagehash>=4.3",
