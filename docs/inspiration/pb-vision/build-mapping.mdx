@@ -1,0 +1,32 @@
+---
+title: PB Vision → Our Build Mapping
+source: https://pb.vision/
+captured: 2026-06-08
+---
+
+# Capability → Our Module (build plan)
+
+Maps each PB Vision capability to where we build it, the OSS we lean on, and status.
+Status: ✅ built · 🔨 building · ⬜ planned · 🖥️ needs GPU.
+
+| PB Vision capability | Our module | OSS used | Status |
+|----------------------|-----------|----------|--------|
+| Ball tracking | `src/vision/tracking/` | supervision ByteTrack, TrackNet (ball) | ✅ / 🖥️ |
+| Player tracking + IDs | `src/vision/tracking/` | Ultralytics BoT-SORT (ReID) | 🔨 / 🖥️ |
+| Ball trajectory + bounces | `src/vision/analysis/trajectory.py` | scipy (savgol) + numpy | ✅ |
+| Shot speed (mph) | trajectory + `analytics/court.py` | numpy + homography | 🔨 |
+| 3rd-shot type (drop/drive/hybrid/lob) | `src/vision/analysis/actions.py` | scikit-learn head + scipy features | 🔨 |
+| Serve/return detection | `actions.py` + rally segmenter | rules + sklearn | 🔨 |
+| Court coverage heatmap | `integration/analytics/metrics.py` | numpy histogram2d | ✅ |
+| Kitchen-reach / positioning | `integration/analytics/` + `court.py` | homography (numpy DLT) | ✅ / 🔨 |
+| Rally extraction + longest rally | `src/vision/analysis/rally.py` | numpy (ball presence/gaps) | 🔨 |
+| Hand battles / attacks | `rally.py` + `actions.py` | rule on net-zone fast exchanges | ⬜ |
+| Automatic highlights | `src/vision/analysis/highlights.py` | rule on rally length / events + ffmpeg cut | ⬜ |
+| Skill rating | `src/vision/analysis/skill.py` | sklearn regression (fixed-weight first) | ⬜ |
+| Net/out error detection | trajectory + court bounds | numpy + homography | ⬜ |
+| Coaching narrative | `src/llm/generate_feedback.py` | Bedrock Haiku + rule | ✅ |
+
+## Principle
+Reuse OSS, combine, glue. Build only the pickleball-specific layer (shot taxonomy,
+skill composite, highlight rules) from base — on top of scipy/sklearn/supervision.
+See `docs/MODELS_AND_REUSE.md`.

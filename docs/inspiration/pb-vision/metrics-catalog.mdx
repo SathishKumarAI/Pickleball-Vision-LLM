@@ -1,0 +1,52 @@
+---
+title: PB Vision — Metrics Catalog
+source: https://pb.vision/
+captured: 2026-06-08
+---
+
+# Metrics Catalog (what they compute)
+
+The target set of analytics to aim our pipeline at. Grouped by signal source.
+
+## From ball trajectory
+| Metric | Notes |
+|--------|-------|
+| Serve speed | px/frame → mph via court homography scale |
+| Drive speed | fast flat shots |
+| Return speed | |
+| Shot speed distribution | per shot type |
+| Net / out errors | ball ends in net region or outside court |
+| Ball bounce locations | depth (serve/return depth) |
+
+## From shot classification
+| Metric | Classes |
+|--------|---------|
+| 3rd-shot type | drop · drive · hybrid · lob |
+| Serve / return detection | first two shots of a rally |
+| Attacks / poaches | aggressive put-aways |
+| Dinks vs drives | soft vs hard at the kitchen |
+
+## From player tracking + court homography
+| Metric | Notes |
+|--------|-------|
+| Court coverage heatmap | per player, in court meters |
+| Distance moved | total movement per player |
+| Kitchen-line reach efficiency | time/▵ to reach NVZ after serve |
+| Positioning with partner | relative spacing |
+
+## From rally segmentation
+| Metric | Notes |
+|--------|-------|
+| Rally count + lengths | longest rally |
+| Hand battles | rapid net exchanges |
+| Highlights | long rallies, hand battles, Ernes, ATPs |
+
+## Composite
+| Metric | Notes |
+|--------|-------|
+| Skill rating | movement speed + shot quality + error rate + positioning (see skill-rating.mdx) |
+| DUPR estimate | maps skill signals → DUPR-like number |
+
+## Units note
+Raw CV gives **pixels**; a **court homography** (`src/integration/analytics/court.py`)
+converts to **meters**, which makes speed (mph), depth, and coverage real-world.

@@ -1,0 +1,32 @@
+---
+title: PB Vision — Competitive Inspiration
+source: https://pb.vision/
+captured: 2026-06-08
+note: Public marketing/help content captured for product inspiration only. Not affiliated.
+---
+
+# PB Vision — Inspiration Dossier
+
+[PB Vision](https://pb.vision/) is the leading AI pickleball video-analysis product
+(turn match recordings → skill ratings + insights). This folder captures their
+public feature/metric set as **inspiration** for our own vision-intelligence build,
+plus a mapping to our `src/` modules.
+
+## Files
+- [`features.mdx`](./features.mdx) — their advertised feature set.
+- [`metrics-catalog.mdx`](./metrics-catalog.mdx) — every stat/metric they compute.
+- [`skill-rating.mdx`](./skill-rating.mdx) — how their skill rating is composed.
+- [`build-mapping.mdx`](./build-mapping.mdx) — pb.vision capability → our module + status.
+
+## How we use this
+Drives the **analytics catalog** we build (`src/vision/analysis/`,
+`src/integration/analytics/`): shot-type classification (serve / 3rd-shot
+drop·drive·hybrid·lob), shot speed, kitchen-reach + court-coverage heatmaps, rally
+extraction, highlights, and a composite skill score. We build these on OSS
+(scipy / scikit-learn / supervision / Ultralytics / TrackNet) — not from scratch.
+
+## Sources
+- [PB Vision](https://pb.vision/) · [Help center](https://help.pb.vision/) ·
+  [Skill ratings](https://help.pb.vision/articles/8216806-pb-vision-skill-ratings) ·
+  [Matt's Pickleball review](https://www.mattspickleball.com/blog/pb-vision-review-how-ai-is-transforming-pickleball-strategy-performance) ·
+  [Software Finder](https://softwarefinder.com/artificial-intelligence/pb-vision)

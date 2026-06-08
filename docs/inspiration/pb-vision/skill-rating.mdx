@@ -1,0 +1,39 @@
+---
+title: PB Vision — Skill Rating
+source: https://help.pb.vision/articles/8216806-pb-vision-skill-ratings
+captured: 2026-06-08
+---
+
+# Skill Rating (composition)
+
+PB Vision's skill rating is a **composite** of measured performance signals
+(exact weights not public). Named input signals:
+
+- **Movement speed** — how fast/efficiently the player moves.
+- **Shot quality** — e.g. 3rd-shot quality, serve/return depth, finishing.
+- **Error rate** — net/out errors.
+- **Positioning** — court alignment, kitchen-line discipline.
+- **Forward pressure / finishing ability** — offensive effectiveness.
+- **Opponent-weakness exploitation** — comparative tendencies.
+
+Also surfaced: per-category sub-ratings ("Advanced Stats"), a **Shot Explorer**,
+data export, and a path to a **DUPR**-style number.
+
+## Our model (proposed, build-from-base on sklearn)
+A transparent composite we can compute from our pipeline outputs:
+
+```
+skill = w1·shot_quality + w2·movement_efficiency + w3·(1 − error_rate)
+      + w4·positioning + w5·finishing
+```
+- `shot_quality`: avg shot-classifier confidence + speed/depth percentiles.
+- `movement_efficiency`: court distance vs points won (homography meters).
+- `error_rate`: net/out ball-end fraction.
+- `positioning`: kitchen-line time fraction.
+- `finishing`: put-away success on attacks.
+
+Start with explainable fixed weights; later fit weights against DUPR labels with a
+small **scikit-learn** regression. Don't hand-roll the regression — use sklearn.
+
+## Source
+[PB Vision skill ratings](https://help.pb.vision/articles/8216806-pb-vision-skill-ratings)

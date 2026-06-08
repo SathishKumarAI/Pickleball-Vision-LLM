@@ -61,10 +61,21 @@ class Pipeline:
         summary = self.feedback.summarize(states) if states else ""
 
         from src.integration.analytics import compute_match_metrics  # lazy (numpy)
+        from src.vision.analysis.rally import analyze_match           # lazy (numpy/scipy)
         metrics = compute_match_metrics(
             states, fps=fps, homography=homography, frame_h=frame_height
         )
-        return {"states": states, "feedback": feedback, "summary": summary, "metrics": metrics}
+        intelligence = analyze_match(states, fps=fps)
+        # Surface rally/shot rollups into metrics for the report + coaching.
+        metrics["rallies"] = {
+            "count": intelligence["num_rallies"],
+            "longest_s": intelligence["longest_rally_s"],
+        }
+        metrics["shots"] = intelligence["shot_counts"]
+        return {
+            "states": states, "feedback": feedback, "summary": summary,
+            "metrics": metrics, "intelligence": intelligence,
+        }
 
     # -- full vision path (needs [vision] extras) --------------------------
 

@@ -42,6 +42,8 @@ vision = [
     "mediapipe>=0.10",
     "pillow>=10.0",
     "imagehash>=4.3",
+    "scipy>=1.11",          # trajectory smoothing (savgol) + signal analysis
+    "scikit-learn>=1.3",    # shot-classifier / skill-rating model heads
     "torch>=2.1",
     "torchvision>=0.16",
 ]
