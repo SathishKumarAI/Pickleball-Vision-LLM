@@ -231,3 +231,6 @@ backup/
 web/.next/
 web/node_modules/
 web/.env.local
+_quarantine/
+mlruns/
+*.tsbuildinfo
